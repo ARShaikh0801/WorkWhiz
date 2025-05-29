@@ -2,8 +2,9 @@ services:
   - type: web
     name: workwhiz
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn WorkWiz2.wsgi:application
+    buildCommand: "./build.sh"
+    startCommand: gunicorn WorkWhiz.wsgi:application
+    plan: free
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: WorkWiz2.settings
@@ -11,3 +12,4 @@ services:
         value: ^=6od-@&vo4i$wukkbjcb2w-6ctob@*c8%=x$jc)#2(ug^(@@_
       - key: DEBUG
         value: False
+    autoDeploy: true
