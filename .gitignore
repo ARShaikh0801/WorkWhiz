@@ -1,0 +1,10 @@
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+.vscode/
+static/media/
+.DS_Store
+Thumbs.db
+**/migrations/*.py
+!**/migrations/__init__.py

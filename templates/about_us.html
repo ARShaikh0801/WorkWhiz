@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Team Members</title>
+    <link rel="stylesheet" href="{% static 'css/style-aboutus.css' %}">
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+        // Restore saved language
+        var savedLang = localStorage.getItem('google_translate_language');
+        if (savedLang) {
+            setTimeout(function() {
+                var select = document.querySelector('#google_translate_element select');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === savedLang) {
+                            select.selectedIndex = i;
+                            select.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            }, 1000); // Delay to ensure widget is loaded
+        }
+    }
+    // Save language on change
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.querySelector('#google_translate_element select');
+        if (select) {
+            select.addEventListener('change', function() {
+                var langCode = this.value;
+                localStorage.setItem('google_translate_language', langCode);
+            });
+        }
+    });
+</script>
+  </head>
+  <body>
+    <div class="top-strip">
+      <div class="nav-left">
+        <img src="{% static 'images/logo.jpg' %}" alt="Work Whiz Logo" class="logo" />
+      </div>  
+      <div class="nav-right">
+        <a href="{% url 'accounts:index' %}"><span class="nav-item">Home</span></a>
+        <a href="{% url 'accounts:about_us' %}"><span class="nav-item">About Us</span></a>
+        <a href="{% url 'accounts:services' %}"><span class="nav-item">Services</span></a>
+        <a href="{% url 'accounts:help_center' %}"><span class="nav-item">Help Center</span></a>
+        <div id="google_translate_element"></div>
+      </div>
+    </div>
+    <div class="container">
+      <header>
+        <h1>Meet Our Team</h1>
+        <p>Dedicated to Making a Difference</p>
+      </header>
+
+      <div class="team-section">
+        <div class="member-card">
+          <img
+            src="{% static 'images/abdul.jpg' %}"
+            alt="Member 1"
+          />
+          <h3>Shaikh Abdulrauf</h3>
+
+          <h5>Contact: +91-XXXXX-XXXXX</h5>
+          <h5>Email: arauf0801@gmail.com</h5>
+          <p class="description">Backend developer with a love for secure, scalable systems using Django. Also enjoys
+            frontend enhancements. Skilled in C++, HTML,CSS.</p>  
+        </div>
+
+        <div class="member-card">
+          <img
+            src="{% static 'images/dev.jpg' %}"
+            alt="Member 2"
+          />
+          <h3>Chauhan Dev</h3>
+
+          <h5>Contact:+91-XXXXX-XXXXX</h5>
+          <h5>Email: devc08412@gmail.com</h5>
+          <p class="description">Frontend enthusiast building responsive, elegant UIs using HTML, CSS, JavaScript And have Database knowledge </p>
+        </div>
+
+        <div class="member-card">
+          <img
+            src="{% static 'images/jinay.jpg' %}"
+            alt="Member 3"
+          />
+          <h3>Shah Jinay</h3>
+
+          <h5>Contact: +91-XXXXX-XXXXX</h5>
+          <h5>Email: jinayshah2207@gmail.com</h5>
+          <p class="description">Hey, I am a creative problem solver who enjoys web development, animation, and game
+            design. I loves tackling challenges, exploring new places, and freelancing his way toward a future in
+            business.</p>  
+        </div>
+      </div>
+
+      <footer>
+        <p>&copy; 2025 WorkWhiz. All Rights Reserved.</p>
+      </footer>
+    </div>
+    
+  </body>
+</html>

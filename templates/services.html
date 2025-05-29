@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - WorkWhiz</title>
+    <link rel="stylesheet" href="{% static 'css/style-services.css' %}">
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+        // Restore saved language
+        var savedLang = localStorage.getItem('google_translate_language');
+        if (savedLang) {
+            setTimeout(function() {
+                var select = document.querySelector('#google_translate_element select');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === savedLang) {
+                            select.selectedIndex = i;
+                            select.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            }, 1000); // Delay to ensure widget is loaded
+        }
+    }
+    // Save language on change
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.querySelector('#google_translate_element select');
+        if (select) {
+            select.addEventListener('change', function() {
+                var langCode = this.value;
+                localStorage.setItem('google_translate_language', langCode);
+            });
+        }
+    });
+</script>
+</head>
+<body>
+    <div class="top-strip">
+        <div class="nav-left">
+            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
+        </div>
+        <div class="nav-right">
+            <a href="{% url 'accounts:index' %}" class="nav-item">Home</a>
+            <a href="{% url 'accounts:about_us' %}" class="nav-item">About Us</a>
+            <a href="{% url 'accounts:help_center' %}" class="nav-item">Help</a>
+            <a href="{% url 'accounts:sign_up' %}" class="nav-item">Sign Up</a>
+            <a href="{% url 'accounts:log_in' %}" class="nav-item">Login</a>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+    <div class="content-section">
+        <div class="service-title">
+            <h1>Our Services</h1>
+            <p>Explore how WorkWhiz can help you connect with workers or find job opportunities.</p>
+        </div>
+        <div class="service-box">
+            <h2>For Contractors</h2>
+            <ul>
+                <li>Post job listings to find skilled workers.</li>
+                <li>Manage applications and hire teams.</li>
+                <li>Track project progress with ease.</li>
+            </ul>
+        </div>
+        <div class="service-box">
+            <h2>For Workers</h2>
+            <ul>
+                <li>Browse and apply for jobs that match your skills.</li>
+                <li>Build a profile to showcase your expertise.</li>
+                <li>Join teams for collaborative projects.</li>
+            </ul>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 WorkWhiz. All rights reserved.</p>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor Dashboard - WorkWhiz</title>
+    <link rel="stylesheet" href="{% static 'css/contractor_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .container { max-width: 1200px; margin: 50px auto; padding: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .worker-card { cursor: pointer; }
+        .worker-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        .profile-pic img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+        .rating { color: green; font-size: 16px; }
+        .job-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .job-table th, .job-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        .job-table th { background-color: #f4f7fb; font-weight: bold; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .status-badge.active { background-color: #e7f9e7; color: #4CAF50; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 18px; margin-right: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background-color: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 700px; border-radius: 12px; }
+        .close { cursor: pointer; float: right; font-size: 20px; }
+        .application-actions { display: flex; gap: 10px; }
+        .post-job-btn { background-color: #1e90ff; color: white; padding: 12px 30px; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .post-job-btn:hover { background-color: #0066cc; }
+        .post-job-wrapper { margin-bottom: 40px; }
+        td, th { text-align: center; }
+        .tabs { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tab-link { padding: 10px 20px; background-color: #f4f7fb; border-radius: 20px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .tab-link.active { background-color: #1e90ff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .job-table { display: block; overflow-x: auto; } .tabs { flex-wrap: wrap; gap: 10px; } }
+    </style>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+            var savedLang = localStorage.getItem('google_translate_language');
+            if (savedLang) {
+                setTimeout(function() {
+                    var select = document.querySelector('#google_translate_element select');
+                    if (select) {
+                        for (var i = 0; i < select.options.length; i++) {
+                            if (select.options[i].value === savedLang) {
+                                select.selectedIndex = i;
+                                select.dispatchEvent(new Event('change'));
+                                break;
+                            }
+                        }
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</head>
+<body>
+    <div class="top-strip">
+        <div class="nav-left">
+            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
+        </div>
+        <div class="nav-right">
+            <a href="{% url 'accounts:contractor_profile' %}" class="nav-item">Profile</a>
+            <a href="{% url 'accounts:my_jobs' %}" class="nav-item">My Jobs</a>
+            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Welcome, {{ user_profile.full_name }}</h1><br>
+        <div class="post-job-wrapper">
+            <a href="{% url 'accounts:post_job' %}" class="post-job-btn">Post a New Job</a>
+        </div>
+        <div class="tabs">
+            <div class="tab-link active" data-tab="overview">Overview</div>
+            <div class="tab-link" data-tab="job-applications">Job Applications</div>
+        </div>
+        <div id="overview" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Available Workers</h2>
+                    {% for worker in workers %}
+                        <div class="worker-card" onclick="viewWorker('{{ worker.id }}')">
+                            <div class="profile-pic">
+                                {% if worker.profile_image %}
+                                    <img src="{{ worker.profile_image.url }}" alt="{{ worker.user.full_name }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3>{{ worker.user.full_name }}</h3>
+                                <p>{{ worker.user.city }}</p>
+                                <p>{{ worker.user.skills_description|truncatewords:10 }}</p>
+                                <div class="rating">Rating: {{ worker.average_rating|floatformat:1 }} / 5</div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No workers available.</p>
+                    {% endfor %}
+                </div>
+                <div class="card">
+                    <h2>My Jobs</h2>
+                    <table class="job-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Rating</th>
+                                <th>Applications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in jobs %}
+                                <tr>
+                                    <td>{{ job.title }}</td>
+                                    <td>
+                                        <span class="status-badge {% if job.end_date > today %}active{% endif %}">
+                                            {% if job.end_date > today %}Active{% else %}Completed{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="rating">★★★★★ {{ job.average_rating|floatformat:1 }}/5</td>
+                                    <td>
+                                        <button class="action-btn" onclick="showTab('job-applications')">👥</button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4">No jobs posted.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="job-applications" class="tab-content">
+            <h2>Job Applications</h2>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <table class="job-table">
+                <thead>
+                    <tr>
+                        <th>Worker Name</th>
+                        <th>Job Title</th>
+                        <th>Application Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in job_applications %}
+                        <tr>
+                            <td>{{ application.worker.full_name }}</td>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.applied_date|date:"Y-m-d" }}</td>
+                            <td>{{ application.status|capfirst }}</td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                    <form class="action-form accept-form" data-url="{% url 'accounts:accept_application' application.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn" style="color: #4CAF50; ">✔</button>
+                                    </form>
+                                    <form class="action-form reject-form" data-url="{% url 'accounts:reject_application' application.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn" style="color: #f44336;">✖</button>
+                                    </form>
+                                {% else %}
+                                    <span>{{ application.status|capfirst }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5">No job applications found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h2>Job Details</h2>
+            <div id="jobDetails"></div>
+        </div>
+    </div>
+    <script>
+        function viewWorker(workerId) {
+            window.location.href = `{% url 'accounts:worker_detail' 0 %}`.replace('0', workerId);
+        }
+
+        function viewJob(jobId) {
+            fetch(`{% url 'accounts:get_job_details' 0 %}`.replace('0', jobId))
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('jobDetails').innerHTML = `
+                        <p><strong>Title:</strong> ${data.title}</p>
+                        <p><strong>Location:</strong> ${data.location}</p>
+                        <p><strong>Description:</strong> ${data.description}</p>
+                        <p><strong>Requirements:</strong> ${data.requirements}</p>
+                        <p><strong>Eligibility:</strong> ${data.eligibility}</p>
+                        <p><strong>Worker Count:</strong> ${data.worker_count}</p>
+                        <p><strong>Duration:</strong> ${data.duration}</p>
+                        <p><strong>Start Date:</strong> ${data.start_date}</p>
+                        <p><strong>End Date:</strong> ${data.end_date}</p>
+                        <p><strong>Rating:</strong> ${data.average_rating.toFixed(1)} / 5</p>
+                    `;
+                    document.getElementById('jobModal').style.display = 'block';
+                });
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-link').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('jobModal').style.display = 'none';
+        }
+
+        // Handle Accept and Reject form submissions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.action-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('data-url');
+                    fetch(url, {
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.reload();  // Refresh the page to update the table
+                        } else {
+                            alert(data.message || 'An error occurred.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while processing the request.');
+                    });
+                });
+            });
+
+            // Tab switching
+            document.querySelectorAll('.tab-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    showTab(this.getAttribute('data-tab'));
+                });
+            });
+
+            // Google Translate language persistence
+            var select = document.querySelector('#google_translate_element select');
+            if (select) {
+                select.addEventListener('change', function() {
+                    var langCode = this.value;
+                    localStorage.setItem('google_translate_language', langCode);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

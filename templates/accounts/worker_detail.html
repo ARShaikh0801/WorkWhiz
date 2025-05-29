@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Details - WorkWhiz</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .profile-pic img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #1e90ff; }
+        .rating { color: gold; font-size: 20px; margin-top: 10px; }
+        .profile-details p { margin: 10px 0; font-size: 16px; text-align: center;}
+        .rate-btn { background-color: #1e90ff; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
+        .rate-btn:hover { background-color: #0066cc; }
+        @media (max-width: 600px) { .container { padding: 15px; } .profile-details p { font-size: 14px; } }
+    </style>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+        // Restore saved language
+        var savedLang = localStorage.getItem('google_translate_language');
+        if (savedLang) {
+            setTimeout(function() {
+                var select = document.querySelector('#google_translate_element select');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === savedLang) {
+                            select.selectedIndex = i;
+                            select.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            }, 1000); // Delay to ensure widget is loaded
+        }
+    }
+    // Save language on change
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.querySelector('#google_translate_element select');
+        if (select) {
+            select.addEventListener('change', function() {
+                var langCode = this.value;
+                localStorage.setItem('google_translate_language', langCode);
+            });
+        }
+    });
+</script>
+</head>
+<body>
+    <div class="top-strip">
+        <div class="nav-left">
+            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
+        </div>
+        <div class="nav-right">
+            <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item">Dashboard</a>
+            <a href="{% url 'accounts:contractor_profile' %}" class="nav-item">Profile</a>
+            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="profile-header">
+            {% if worker.profile_image %}
+                <img src="{{ worker.profile_image.url }}" alt="Profile Image" class="profile-pic">
+            {% else %}
+                <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="profile-pic">
+            {% endif %}
+            <h1>{{ worker.user.full_name }}</h1>
+            <p>Worker</p>
+            <div class="rating">Rating: {{ average_rating|floatformat:1 }} / 5</div>
+        </div>
+        <div class="profile-details">
+            <p><strong>Email:</strong> {{ worker.user.email }}</p>
+            <p><strong>Contact:</strong> {{ worker.user.contact_number }}</p>
+            <p><strong>City:</strong> {{ worker.user.city }}</p>
+            <p><strong>Skills:</strong> {{ worker.user.skills_description }}</p>
+            <p><strong>Address:</strong> {{ worker.address }}</p>
+        </div>
+        <a href="{% url 'accounts:rate_worker' worker.user.id %}" class="rate-btn">Rate Worker</a>
+    </div>
+    
+</body>
+</html>

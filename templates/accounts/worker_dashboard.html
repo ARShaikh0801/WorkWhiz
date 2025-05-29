@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - WorkWhiz</title>
+    <link rel="stylesheet" href="{% static 'css/worker_dashboard.css' %}">
+    <!-- <style>
+        .container { max-width: 1200px; margin: 50px auto; padding: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .job-card { cursor: pointer; }
+        .job-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        .rating { color: green; font-size: 16px; }
+        .job-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .job-table th, .job-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        .job-table th { background-color: #f4f7fb; font-weight: bold; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .status-badge.pending { background-color: #fff3e0; color: #ff9800; }
+        .status-badge.accepted { background-color: #e7f9e7; color: #4CAF50; }
+        .status-badge.rejected { background-color: #ffdddd; color: #f44336; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 18px; margin-right: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background-color: white; margin: 15% auto; padding: 20px; width: 90%; max-width: 700px; border-radius: 12px; }
+        .close { cursor: pointer; float: right; font-size: 20px; }
+        .apply-btn, .rate-btn { background-color: #1e90ff; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
+        .apply-btn:hover, .rate-btn:hover { background-color: #0066cc; }
+        .filter-btn { background-color: #1e90ff; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .filter-btn:hover { background-color: #0066cc; }
+        a{text-decoration: none;}
+        .top-strip {
+  background-color: #ffffff;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: flex-end;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  height: 40px;
+  margin-right: 25px;
+  object-fit: contain;
+  transform: scale(1.6);
+  margin-left: -10px;
+  width: 180px;
+}
+.nav-right {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.nav-item {
+  color: #444;
+  font-size: 20px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  background-color: #66d;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Language selector */
+.language-select {
+  margin-left: 20px;
+}
+
+#google_translate_element {
+  display: inline-block;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .job-table { display: block; overflow-x: auto; } }
+    </style> -->
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+        // Restore saved language
+        var savedLang = localStorage.getItem('google_translate_language');
+        if (savedLang) {
+            setTimeout(function() {
+                var select = document.querySelector('#google_translate_element select');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === savedLang) {
+                            select.selectedIndex = i;
+                            select.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            }, 1000); // Delay to ensure widget is loaded
+        }
+    }
+    // Save language on change
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.querySelector('#google_translate_element select');
+        if (select) {
+            select.addEventListener('change', function() {
+                var langCode = this.value;
+                localStorage.setItem('google_translate_language', langCode);
+            });
+        }
+    });
+</script>
+</head>
+<body>
+    <div class="top-strip">
+        <div class="nav-left">
+            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
+        </div>
+        <div class="nav-right">
+            <a href="{% url 'accounts:worker_profile' %}" class="nav-item">Profile</a>
+            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Welcome, {{ user_profile.full_name }}</h1>
+        <button class="filter-btn" onclick="filterByLocation()">Filter by My Location</button>
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Available Jobs</h2>
+                {% for job in jobs %}
+                    <div class="job-card" onclick="viewJob('{{ job.id }}')">
+                        <h3>{{ job.title }}</h3>
+                        <p>{{ job.location }}</p>
+                        <p>{{ job.description|truncatewords:10 }}</p>
+                        <div class="rating">Job Rating: {{ job.average_rating|floatformat:1 }} / 5</div>
+                        <div class="rating">Contractor Rating: {{ job.contractor_rating|floatformat:1 }} / 5</div>
+                        <div class="button-container"><button class="apply-btn" onclick="applyForJob('{{ job.id }}')">Apply</button>
+                        <a href="{% url 'accounts:rate_job' job.id %}" class="rate-btn">Rate Job</a>
+                        <a href="{% url 'accounts:rate_contractor' job.contractor.id %}" class="rate-btn">Rate Contractor</a></div>
+                    </div>
+                {% empty %}
+                    <p>No jobs available.</p>
+                {% endfor %}
+            </div>
+            <div class="card">
+                <h2>My Applications</h2>
+                <table class="job-table">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>{{ application.job.title }}</td>
+                                <td>
+                                    <span class="status-badge {{ application.status }}">{{ application.status|capfirst }}</span>
+                                </td>
+                                <td>
+                                    {% if application.status == 'pending' %}
+                                        <button class="action-btn" onclick="withdrawApplication('{{ application.id }}')">✖</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3">No applications submitted.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="jobModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">×</span>
+        <h2>Job Details</h2>
+        <div id="jobDetails"></div>
+        <form id="applicationForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="message">Cover Letter</label>
+                <textarea id="message" name="message" placeholder="Add a cover letter (optional)"></textarea>
+            </div>
+            <button type="submit" class="apply-btn">Submit Application</button>
+        </form>
+    </div>
+</div>
+    <script>
+        function filterByLocation() {
+            window.location.href = '?location=worker';
+        }
+        
+        function viewJob(jobId) {
+            fetch(`/get_job_details/${jobId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('jobDetails').innerHTML = `
+                        <p><strong>Title:</strong> ${data.title}</p>
+                        <p><strong>Location:</strong> ${data.location}</p>
+                        <p><strong>Description:</strong> ${data.description}</p>
+                        <p><strong>Requirements:</strong> ${data.requirements}</p>
+                        <p><strong>Eligibility:</strong> ${data.eligibility}</p>
+                        <p><strong>Worker Count:</strong> ${data.worker_count}</p>
+                        <p><strong>Duration:</strong> ${data.duration}</p>
+                        <p><strong>Start Date:</strong> ${data.start_date}</p>
+                        <p><strong>End Date:</strong> ${data.end_date}</p>
+                        <p><strong>Contractor:</strong> ${data.contractor}</p>
+                        <p><strong>Rating:</strong> ${data.average_rating.toFixed(1)} / 5</p>
+                    `;
+                    // Store job ID for form submission
+                    document.getElementById('applicationForm').dataset.jobId = jobId;
+                    document.getElementById('jobModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching job details:', error);
+                    alert('Error loading job details. Please try again.');
+                });
+        }
+        
+        function applyForJob(jobId) {
+            viewJob(jobId);
+        }
+        
+        // Handle form submission with AJAX
+        document.addEventListener('DOMContentLoaded', function() {
+            const applicationForm = document.getElementById('applicationForm');
+            if (applicationForm) {
+                applicationForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Prevent default form submission
+                    
+                    const jobId = this.dataset.jobId;
+                    const message = document.getElementById('message').value;
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('message', message);
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+                    
+                    // Submit application via AJAX
+                    fetch(`/submit_application/${jobId}/`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message || 'Application submitted successfully!');
+                        closeModal();
+                        // Refresh the page to show updated applications
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error submitting application:', error);
+                        alert('Error submitting application. Please try again.');
+                    });
+                });
+            }
+        });
+        
+        function withdrawApplication(applicationId) {
+            if (confirm('Are you sure you want to withdraw this application?')) {
+                fetch(`/withdraw_application/${applicationId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error withdrawing application:', error);
+                    alert('Error withdrawing application. Please try again.');
+                });
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('jobModal').style.display = 'none';
+            // Clear the form
+            document.getElementById('message').value = '';
+        }
+    </script>
+</body>
+</html>

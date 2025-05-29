@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <title>WorkWhiz - Home</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+        // Restore saved language
+        var savedLang = localStorage.getItem('google_translate_language');
+        if (savedLang) {
+            setTimeout(function() {
+                var select = document.querySelector('#google_translate_element select');
+                if (select) {
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === savedLang) {
+                            select.selectedIndex = i;
+                            select.dispatchEvent(new Event('change'));
+                            break;
+                        }
+                    }
+                }
+            }, 1000); // Delay to ensure widget is loaded
+        }
+    }
+    // Save language on change
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.querySelector('#google_translate_element select');
+        if (select) {
+            select.addEventListener('change', function() {
+                var langCode = this.value;
+                localStorage.setItem('google_translate_language', langCode);
+            });
+        }
+    });
+</script>
+</head>
+<body>
+    <div class="top-strip">
+        <div class="nav-left">
+            <img src="{% static 'images/logo.jpg' %}" alt="Work Whiz Logo" class="logo" />
+        </div>  
+        <div class="nav-right">
+            <a href="{% url 'accounts:index' %}"><span class="nav-item">Home</span></a>
+            <a href="{% url 'accounts:about_us' %}"><span class="nav-item">About Us</span></a>
+            <a href="{% url 'accounts:services' %}"><span class="nav-item">Services</span></a>
+            <a href="{% url 'accounts:help_center' %}"><span class="nav-item">Help Center</span></a>
+            <div id="google_translate_element"></div>
+        </div>
+    </div>
+
+    <div class="background-img">
+        <div class="animated-quote">
+            <span class="word">Connecting</span>
+            <span class="word">Workers</span>
+            <span class="word">and</span>
+            <span class="word">Contractors</span>
+            <span class="word">Seamlessly</span>
+        </div>
+        <div class="button-container">
+            <a href="{% url 'accounts:sign_up' %}" class="action-button">Sign Up</a>
+            <a href="{% url 'accounts:log_in' %}" class="action-button">Log In</a>
+        </div>
+    </div>
+
+    <div class="description-section">
+        <div class="column">
+            <p><strong>WorkWhiz is a platform that bridges the gap between skilled laborers and contractors. Workers can sign up and showcase their experience and skills. The platform empowers workers to present themselves professionally, increasing their chances of getting hired quickly.</strong></p>
+        </div>
+        <div class="column">
+            <p><strong>Contractors can find verified workers by filtering through criteria like skills, age, and location to get the job done right and fast. With a user-friendly interface and real-time listings, hiring becomes efficient, reliable, and hassle-free.</strong></p>
+        </div>
+    </div>
+
+    <div class="bottom-strip">
+        <div class="animated-thankyou">
+            <span class="word">Thank</span>
+            <span class="word">You</span>
+            <span class="word">For</span>
+            <span class="word">Visiting</span>
+            <span class="word">WorkWhiz</span>
+        </div>
+        <a href="{% url 'accounts:about_us' %}" class="about-link">About Us</a>
+        <footer>
+            <p>© 2025 WorkWhiz. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    
+</body>
+</html>

@@ -1,0 +1,180 @@
+
+/* style-help_center.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.top-strip {
+    background-color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-left img {
+    height: 40px;
+    width: 180px;
+    object-fit: contain;
+    transform: scale(1.6);
+    margin-left: -10px;
+}
+
+.nav-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-item {
+    color: #444;
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+    background-color: #1e90ff;
+    color: white;
+}
+
+#google_translate_element {
+    margin-left: 20px;
+}
+
+#google_translate_element select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.content-section {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.service-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.service-title h1 {
+    font-size: 36px;
+    color: #1e90ff;
+    margin-bottom: 10px;
+}
+
+.service-title p {
+    font-size: 18px;
+    color: #666;
+}
+
+.faq-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.faq-section h2 {
+    font-size: 24px;
+    color: #1e90ff;
+    margin-bottom: 15px;
+}
+
+.faq-section ul {
+    list-style: none;
+}
+
+.faq-section li {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.contact-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.contact-box h2 {
+    font-size: 24px;
+    color: #1e90ff;
+    margin-bottom: 15px;
+}
+
+.contact-box p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+footer {
+    background-color: #1e90ff;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .top-strip {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .nav-right {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    .nav-item {
+        font-size: 16px;
+        padding: 6px 12px;
+    }
+    .service-title h1 {
+        font-size: 28px;
+    }
+    .service-title p {
+        font-size: 16px;
+    }
+    .faq-section h2, .contact-box h2 {
+        font-size: 20px;
+    }
+    .faq-section li, .contact-box p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-section {
+        padding: 15px;
+    }
+    .service-title h1 {
+        font-size: 24px;
+    }
+}
