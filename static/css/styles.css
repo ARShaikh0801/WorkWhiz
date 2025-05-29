@@ -1,47 +1,50 @@
-/* Improved styles.css - for index.html */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9f9;
   color: #333;
+  overflow-x: hidden; /* Prevent horizontal scroll on small screens */
 }
-a{
+
+a {
   text-decoration: none;
 }
 
-.profile-pic{
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-  }
+.profile-pic {
+  width: 80px; /* Reduced for mobile */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
 /* Top navigation strip */
 .top-strip {
   background-color: #ffffff;
-  padding: 15px 30px;
+  padding: 10px 20px; /* Reduced padding for smaller screens */
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  flex-wrap: wrap; /* Allow wrapping for small screens */
 }
 
 .nav-right {
   display: flex;
-  gap: 30px;
+  gap: 15px; /* Reduced gap for smaller screens */
   align-items: center;
-  width: 100%;
+  flex-wrap: wrap; /* Allow navigation items to wrap */
   justify-content: flex-end;
+  flex-grow: 1;
 }
 
 .nav-item {
   color: #444;
-  font-size: 20px;
+  font-size: 16px; /* Smaller font for better fit */
   font-weight: 500;
-  text-decoration: none;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -54,12 +57,9 @@ a{
 }
 
 /* Language selector */
-.language-select {
-  margin-left: 20px;
-}
-
 #google_translate_element {
   display: inline-block;
+  font-size: 14px; /* Adjusted for smaller screens */
 }
 
 .nav-left {
@@ -69,22 +69,20 @@ a{
 }
 
 .logo {
-  height: 40px;
-  margin-right: 25px;
+  height: 35px; /* Slightly smaller for mobile */
+  margin-right: 15px;
   object-fit: contain;
-  transform: scale(1.6);
-  margin-left: -10px;
-  width: 180px;
+  transform: scale(1.4);
+  margin-left: -5px;
+  width: 150px; /* Adjusted for responsiveness */
 }
 
 /* Background image section */
 .background-img {
-  /* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/default-profile.jpeg'); */
-  background: linear-gradient(to right,#66d,rgb(0,102,204));
-  border-radius: 25px;
+  background: linear-gradient(to right, #66d, rgb(0, 102, 204)); /* Fallback gradient */
   background-size: cover;
   background-position: center;
-  height: 70vh;
+  height: 60vh; /* Reduced height for smaller screens */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -92,21 +90,24 @@ a{
   color: white;
   text-align: center;
   position: relative;
+  border-radius: 15px; /* Slightly smaller border radius */
+  margin: 10px; /* Added margin for spacing */
 }
 
 /* Animated quote */
 .animated-quote {
-  font-size: 3rem;
+  font-size: 2rem; /* Smaller base font size */
   font-weight: bold;
-  margin-bottom: 40px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  padding: 0 15px; /* Padding for narrow screens */
 }
 
 .animated-quote .word {
   display: inline-block;
   opacity: 0;
   animation: fadeInSlide 0.8s forwards;
-  margin: 0 10px;
+  margin: 0 5px; /* Reduced margin for smaller screens */
 }
 
 .animated-quote .word:nth-child(1) { animation-delay: 0.2s; }
@@ -118,7 +119,7 @@ a{
 @keyframes fadeInSlide {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -128,47 +129,53 @@ a{
 
 /* Buttons */
 .button-container {
-  margin-top: 30px;
+  margin-top: 20px;
+  display: flex;
+  gap: 10px; /* Reduced gap for smaller screens */
+  flex-wrap: wrap; /* Allow buttons to wrap */
+  justify-content: center;
 }
 
 .action-button {
   display: inline-block;
-  padding: 12px 30px;
-  margin: 0 15px;
+  padding: 10px 25px; /* Slightly smaller padding */
+  margin: 5px;
   background-color: #1e90ff;
   color: white;
   border: none;
-  border-radius: 30px;
-  font-size: 18px;
+  border-radius: 25px;
+  font-size: 16px; /* Smaller font size */
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 }
 
 .action-button:hover {
   background-color: #0066cc;
-  transform: translateY(-5px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Description section */
 .description-section {
   display: flex;
-  padding: 60px 40px;
+  padding: 40px 20px; /* Reduced padding */
   background-color: white;
+  flex-direction: column; /* Stack columns on small screens */
+  gap: 20px;
 }
 
 .column {
   flex: 1;
-  padding: 20px 40px;
+  padding: 15px 20px;
   text-align: center;
 }
 
 .column p {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 16px; /* Smaller font size */
+  line-height: 1.5;
 }
 
 .column strong {
@@ -180,21 +187,22 @@ a{
   background-color: #333;
   color: white;
   text-align: center;
-  padding: 40px 20px;
+  padding: 30px 15px; /* Reduced padding */
   position: relative;
-  border-radius: 25px;
+  border-radius: 15px;
+  margin: 10px; /* Added margin for spacing */
 }
 
 .animated-thankyou {
-  font-size: 2rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem; /* Smaller font size */
+  margin-bottom: 15px;
 }
 
 .animated-thankyou .word {
   display: inline-block;
   opacity: 0;
   animation: fadeInWord 0.6s forwards;
-  margin: 0 8px;
+  margin: 0 5px; /* Reduced margin */
   background: linear-gradient(45deg, #1e90ff, #66d);
   -webkit-background-clip: text;
   background-clip: text;
@@ -210,7 +218,7 @@ a{
 @keyframes fadeInWord {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -222,12 +230,12 @@ a{
   display: inline-block;
   color: #fff;
   text-decoration: none;
-  padding: 8px 20px;
+  padding: 6px 15px; /* Smaller padding */
   border: 2px solid #1e90ff;
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 14px; /* Smaller font */
   transition: all 0.3s ease;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .about-link:hover {
@@ -237,22 +245,169 @@ a{
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .animated-quote {
-    font-size: 2rem;
+@media (max-width: 480px) {
+  .top-strip {
+    padding: 8px 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
+
+  .nav-left {
+    margin-bottom: 10px;
+  }
+
+  .logo {
+    height: 30px;
+    width: 120px;
+    transform: scale(1.2);
+    margin-left: 0;
+  }
+
+  .nav-right {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .nav-item {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  #google_translate_element {
+    font-size: 12px;
+  }
+
+  .background-img {
+    height: 50vh;
+    margin: 5px;
+    border-radius: 10px;
+  }
+
+  .animated-quote {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .action-button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+
   .description-section {
+    padding: 20px 10px;
+  }
+
+  .column {
+    padding: 10px;
+  }
+
+  .column p {
+    font-size: 14px;
+  }
+
+  .bottom-strip {
+    padding: 20px 10px;
+    margin: 5px;
+  }
+
+  .animated-thankyou {
+    font-size: 1.2rem;
+  }
+
+  .about-link {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .top-strip {
+    padding: 10px 15px;
+  }
+
+  .nav-right {
+    gap: 12px;
+  }
+
+  .nav-item {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+
+  .logo {
+    height: 32px;
+    width: 140px;
+  }
+
+  .background-img {
+    height: 55vh;
+  }
+
+  .animated-quote {
+    font-size: 1.8rem;
+  }
+
+  .action-button {
+    padding: 9px 22px;
+    font-size: 15px;
+  }
+
+  .description-section {
+    padding: 30px 15px;
     flex-direction: column;
   }
-  
-  .nav-right {
-    justify-content: center;
-    gap: 15px;
+
+  .column p {
+    font-size: 15px;
   }
-  
+
+  .animated-thankyou {
+    font-size: 1.4rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .top-strip {
+    padding: 15px 30px;
+  }
+
+  .nav-right {
+    gap: 20px;
+  }
+
   .nav-item {
-    padding: 6px 12px;
-    font-size: 14px;
+    font-size: 18px;
+    padding: 8px 14px;
+  }
+
+  .logo {
+    height: 40px;
+    width: 160px;
+  }
+
+  .background-img {
+    height: 65vh;
+  }
+
+  .animated-quote {
+    font-size: 2.5rem;
+  }
+
+  .action-button {
+    padding: 10px 25px;
+    font-size: 16px;
+  }
+
+  .description-section {
+    flex-direction: row;
+    padding: 50px 30px;
+  }
+
+  .column p {
+    font-size: 16px;
+  }
+
+  .animated-thankyou {
+    font-size: 1.8rem;
   }
 }
