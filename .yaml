@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: workwhiz
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn WorkWiz2.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: WorkWiz2.settings
+      - key: SECRET_KEY
+        value: ^=6od-@&vo4i$wukkbjcb2w-6ctob@*c8%=x$jc)#2(ug^(@@_
+      - key: DEBUG
+        value: False
