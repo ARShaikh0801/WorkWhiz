@@ -1,0 +1,13 @@
+{% load static %}
+<div class="top-strip">
+    <div class="nav-left">
+        <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo" />
+    </div>
+    <div class="nav-right">
+        <a href="{% url 'accounts:index' %}"><span class="nav-item">Home</span></a>
+        <a href="{% url 'accounts:about_us' %}"><span class="nav-item">About Us</span></a>
+        <a href="{% url 'accounts:services' %}"><span class="nav-item">Services</span></a>
+        <a href="{% url 'accounts:help_center' %}"><span class="nav-item">Help Center</span></a>
+        <div id="google_translate_element"></div>
+    </div>
+</div>

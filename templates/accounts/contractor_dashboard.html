@@ -36,44 +36,11 @@
         .tab-content.active { display: block; }
         @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .job-table { display: block; overflow-x: auto; } .tabs { flex-wrap: wrap; gap: 10px; } }
     </style>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-            var savedLang = localStorage.getItem('google_translate_language');
-            if (savedLang) {
-                setTimeout(function() {
-                    var select = document.querySelector('#google_translate_element select');
-                    if (select) {
-                        for (var i = 0; i < select.options.length; i++) {
-                            if (select.options[i].value === savedLang) {
-                                select.selectedIndex = i;
-                                select.dispatchEvent(new Event('change'));
-                                break;
-                            }
-                        }
-                    }
-                }, 1000);
-            }
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
-        </div>
-        <div class="nav-right">
-            <a href="{% url 'accounts:contractor_profile' %}" class="nav-item">Profile</a>
-            <a href="{% url 'accounts:my_jobs' %}" class="nav-item">My Jobs</a>
-            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
+    {% include 'partials/_navbar_contractor.html' %}
+
     <div class="container">
         <h1>Welcome, {{ user_profile.full_name }}</h1><br>
         <div class="post-job-wrapper">
@@ -235,7 +202,6 @@
             document.getElementById('jobModal').style.display = 'none';
         }
 
-        // Handle Accept and Reject form submissions
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.action-form').forEach(form => {
                 form.addEventListener('submit', function(e) {
@@ -244,14 +210,12 @@
                     fetch(url, {
                         method: 'POST',
                         body: new FormData(this),
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            window.location.reload();  // Refresh the page to update the table
+                            window.location.reload();
                         } else {
                             alert(data.message || 'An error occurred.');
                         }
@@ -263,21 +227,11 @@
                 });
             });
 
-            // Tab switching
             document.querySelectorAll('.tab-link').forEach(link => {
                 link.addEventListener('click', function() {
                     showTab(this.getAttribute('data-tab'));
                 });
             });
-
-            // Google Translate language persistence
-            var select = document.querySelector('#google_translate_element select');
-            if (select) {
-                select.addEventListener('change', function() {
-                    var langCode = this.value;
-                    localStorage.setItem('google_translate_language', langCode);
-                });
-            }
         });
     </script>
 </body>

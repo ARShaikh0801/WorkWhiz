@@ -15,7 +15,7 @@ import json
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.db import models
+from django.db import models, IntegrityError
 from django.db.models import Avg
 
 def index(request):
@@ -95,6 +95,8 @@ def password_reset_complete(request):
 
 @login_required
 def contractor_dashboard(request):
+    if request.user.user_type != 'contractor':
+        return redirect('accounts:worker_dashboard')
     workers = WorkerProfile.objects.all()
     jobs = JobPost.objects.filter(contractor=request.user)
     for worker in workers:
@@ -113,6 +115,8 @@ def contractor_dashboard(request):
 
 @login_required
 def worker_dashboard(request):
+    if request.user.user_type != 'worker':
+        return redirect('accounts:contractor_dashboard')
     jobs = JobPost.objects.filter(end_date__gte=timezone.now().date())
     applications = JobApplication.objects.filter(worker=request.user)
     subworkers = SubWorker.objects.filter(worker=request.user)
@@ -213,7 +217,10 @@ def worker_profile(request):
     })
 @login_required
 def edit_profile(request):
-    profile = request.user.contractorprofile if request.user.user_type == 'contractor' else request.user.workerprofile
+    if request.user.user_type == 'contractor':
+        profile, _ = ContractorProfile.objects.get_or_create(user=request.user, defaults={'city': request.user.city})
+    else:
+        profile, _ = WorkerProfile.objects.get_or_create(user=request.user, defaults={'city': request.user.city})
     form_class = ContractorProfileForm if request.user.user_type == 'contractor' else WorkerProfileForm
     
     if request.method == 'POST':
@@ -333,12 +340,12 @@ def get_job_details(request, job_id):
 def submit_application(request, job_id):
     if not request.user.city or not request.user.skills_description:
         messages.error(request, 'Please complete your profile before applying.')
-        return redirect('accounts/worker_profile.html')
+        return redirect('accounts:worker_profile')
     
     job = get_object_or_404(JobPost, id=job_id)
     if JobApplication.objects.filter(job=job, worker=request.user).exists():
         messages.error(request, 'You have already applied for this job.')
-        return redirect('accounts/worker_dashboard.html')
+        return redirect('accounts:worker_dashboard')
     
     if request.method == 'POST':
         form = JobApplicationForm(request.POST)
@@ -392,10 +399,10 @@ def edit_team_member(request, member_id):
         form = SubWorkerForm(request.POST, instance=subworker)
         if form.is_valid():
             form.save()
-            messages.success(request,'Team member updated successfully.')
+            messages.success(request, 'Team member updated successfully.')
             return redirect(reverse('accounts:worker_profile'))
         else:
-            messages.success(request,'Error updating team member.')
+            messages.error(request, 'Error updating team member.')
             return redirect(reverse('accounts:worker_profile'))
     elif request.method == 'GET':
         data = {
@@ -459,8 +466,11 @@ def rate_contractor(request, contractor_id):
             rating.reviewer = request.user
             rating.target_user = contractor
             rating.rating_type = 'worker_to_contractor'
-            rating.save()
-            messages.success(request, 'Rating submitted successfully.')
+            try:
+                rating.save()
+                messages.success(request, 'Rating submitted successfully.')
+            except IntegrityError:
+                messages.error(request, 'You have already rated this contractor.')
             return redirect('accounts:worker_dashboard')
         else:
             messages.error(request, 'Error submitting rating.')
@@ -487,8 +497,11 @@ def rate_worker(request, worker_id):
             rating.reviewer = request.user
             rating.target_user = worker
             rating.rating_type = 'contractor_to_worker'
-            rating.save()
-            messages.success(request, 'Rating submitted successfully.')
+            try:
+                rating.save()
+                messages.success(request, 'Rating submitted successfully.')
+            except IntegrityError:
+                messages.error(request, 'You have already rated this worker.')
             return redirect('accounts:contractor_dashboard')
         else:
             messages.error(request, 'Error submitting rating.')
@@ -515,8 +528,11 @@ def rate_job(request, job_id):
             rating.reviewer = request.user
             rating.target_job = job
             rating.rating_type = 'worker_to_job'
-            rating.save()
-            messages.success(request, 'Rating submitted successfully.')
+            try:
+                rating.save()
+                messages.success(request, 'Rating submitted successfully.')
+            except IntegrityError:
+                messages.error(request, 'You have already rated this job.')
             return redirect('accounts:worker_dashboard')
         else:
             messages.error(request, 'Error submitting rating.')

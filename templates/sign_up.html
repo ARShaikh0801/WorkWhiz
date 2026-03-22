@@ -6,54 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - WorkWhiz</title>
     <link rel="stylesheet" href="{% static 'css/style-signup.css' %}">
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-        // Restore saved language
-        var savedLang = localStorage.getItem('google_translate_language');
-        if (savedLang) {
-            setTimeout(function() {
-                var select = document.querySelector('#google_translate_element select');
-                if (select) {
-                    for (var i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === savedLang) {
-                            select.selectedIndex = i;
-                            select.dispatchEvent(new Event('change'));
-                            break;
-                        }
-                    }
-                }
-            }, 1000); // Delay to ensure widget is loaded
-        }
-    }
-    // Save language on change
-    document.addEventListener('DOMContentLoaded', function() {
-        var select = document.querySelector('#google_translate_element select');
-        if (select) {
-            select.addEventListener('change', function() {
-                var langCode = this.value;
-                localStorage.setItem('google_translate_language', langCode);
-            });
-        }
-    });
-</script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
-    
     <div class="signup-container">
         <h1>Sign Up</h1>
         {% if messages %}
@@ -72,15 +27,16 @@
             </div>
         </form>
     </div>
-    <script>const togglePassword = document.querySelector('.toggle-password');
-            const passwordInput = document.querySelector('#password');
-            if (togglePassword && passwordInput) {
-                togglePassword.addEventListener('click', function() {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    this.textContent = type === 'password' ? '👁️' : '🙈';
-                });
-            }
-        </script>
+    <script>
+        const togglePassword = document.querySelector('.toggle-password');
+        const passwordInput = document.querySelector('#password');
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
+    </script>
 </body>
 </html>

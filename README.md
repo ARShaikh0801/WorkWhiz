@@ -1,50 +1,213 @@
-# WorkWhiz
+<div align="center">
 
-Connecting workers and contractors...
+# ⚡ WorkWhiz
 
-## Overview
-WorkWhiz is a platform that connects workers and contractors, helping contractors find skilled labor and workers find job opportunities. The project uses HTML/CSS for the frontend and Python for backend logic.
+### Connecting Workers & Contractors — Seamlessly
 
-## Features
-- Job listings and searching
-- User roles for workers and contractors
-- Basic profile management
-- Contact/booking functionality
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-4.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
 
-## Tech stack
-- Frontend: HTML, CSS
-- Backend: Python (please update with framework: Django/Flask/FastAPI if available)
-- Shell: small scripts (optional)
+*A full-stack platform that bridges the gap between skilled workers and contractors. Workers showcase their expertise, contractors find the right talent — fast, reliable, and hassle-free.*
 
-## Getting started (local)
-1. Clone the repo:
-   git clone https://github.com/ARShaikh0801/WorkWhiz.git
-2. If there is a Python backend:
-   - Create and activate a virtual environment:
-     python -m venv venv
-     source venv/bin/activate  # macOS/Linux
-     venv\Scripts\activate     # Windows
-   - Install dependencies:
-     pip install -r requirements.txt
-   - Run database migrations (if applicable):
-     python manage.py migrate
-   - Start the server:
-     python manage.py runserver
-3. Open the frontend:
-   - If the project is static, open `index.html` in a browser or serve it with a simple HTTP server:
-     python -m http.server 8000
+---
 
-## Environment & configuration
-- Add required environment variables or a `.env` file as needed (database URL, secret keys, etc.).
-- If using Django/Flask, check the project settings for any required configuration.
+</div>
 
-## Contributing
-- Fork the repo, create a branch, make changes, push, and open a PR.
-- Add clear commit messages and update tests (if present).
+## 🌟 Features
 
-## TODO / Notes
-- Please update this README with exact backend framework, database details, and deployment steps.
-- Add screenshots and a LICENSE file if needed.
+<table>
+<tr>
+<td width="50%">
 
-## Contact
-Maintainer: ARShaikh0801
+### 👷 For Workers
+- 📝 Create & manage professional profiles
+- 🔍 Browse & apply for jobs matching your skills
+- 👥 Add team members / sub-workers
+- ⭐ Rate contractors & jobs
+- 📊 Track application status in real-time
+- 🌐 Multi-language support (18 languages)
+
+</td>
+<td width="50%">
+
+### 🏗️ For Contractors
+- 📋 Post job listings with full details
+- 🔎 Browse worker profiles by skill & location
+- ✅ Accept / reject worker applications
+- ⭐ Rate workers after completion
+- 📈 Dashboard with job & applicant overview
+- 🔔 Real-time notifications
+
+</td>
+</tr>
+</table>
+
+### 🔐 Authentication & Security
+- User registration with role selection (Worker / Contractor)
+- Secure login with password hashing
+- Password reset via email with token validation
+- Profile image upload with size/type validation
+
+### 🌐 Internationalization
+- Google Translate integration supporting **18 regional languages**
+- Language preference persistence via `localStorage`
+- Includes: Hindi, Gujarati, Tamil, Marathi, Kannada, Telugu, Malayalam, Bengali, Punjabi, and more
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Django 4.x (Python 3.10+) |
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| **Database** | SQLite (default) |
+| **Static Files** | WhiteNoise (production-ready) |
+| **Email** | SMTP via Gmail |
+| **i18n** | Google Translate API |
+| **Deployment** | Render / Railway / any WSGI server |
+
+---
+
+## 📁 Project Structure
+
+```
+WorkWhiz/
+├── WorkWhiz/              # Django project settings
+│   ├── settings.py        # Configuration (DB, email, static files)
+│   ├── urls.py            # Root URL routing
+│   └── wsgi.py            # WSGI entry point
+├── accounts/              # Main Django app
+│   ├── models.py          # User, Job, Application, Rating models
+│   ├── views.py           # All view logic (21 views)
+│   ├── forms.py           # Registration, profile, job, rating forms
+│   ├── urls.py            # App URL patterns
+│   └── admin.py           # Admin site configuration
+├── templates/             # Django templates
+│   ├── partials/          # Reusable template includes
+│   │   ├── _google_translate.html
+│   │   ├── _navbar_public.html
+│   │   ├── _navbar_contractor.html
+│   │   ├── _navbar_worker.html
+│   │   └── _navbar_rating.html
+│   ├── accounts/          # Account-specific templates
+│   │   ├── contractor_dashboard.html
+│   │   ├── worker_dashboard.html
+│   │   ├── contractor_profile.html
+│   │   ├── worker_profile.html
+│   │   ├── post-job.html
+│   │   ├── my-jobs.html
+│   │   └── ...            # Rating, password reset templates
+│   ├── index.html         # Landing page
+│   ├── about_us.html      # Team page
+│   ├── services.html      # Services overview
+│   ├── help_center.html   # FAQ & contact
+│   ├── log_in.html        # Login form
+│   └── sign_up.html       # Registration form
+├── static/
+│   ├── css/               # Stylesheets
+│   │   ├── styles.css     # Base styles + responsive breakpoints
+│   │   ├── contractor_dashboard.css
+│   │   ├── worker_dashboard.css
+│   │   └── ...            # Page-specific CSS
+│   └── images/            # Logos, team photos, defaults
+├── requirements.txt       # Python dependencies
+├── manage.py              # Django CLI
+└── .env                   # Environment variables (not committed)
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Python 3.10+** installed
+- **pip** package manager
+- **Git** for version control
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ARShaikh0801/WorkWhiz.git
+cd WorkWhiz
+
+# 2. Create & activate virtual environment
+python -m venv venv
+venv\Scripts\activate         # Windows
+# source venv/bin/activate    # macOS / Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Set up environment variables
+#    Create a .env file in the project root:
+```
+
+```env
+SECRET_KEY=your-secret-key-here
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=your-email@gmail.com
+```
+
+```bash
+# 5. Run database migrations
+python manage.py migrate
+
+# 6. Create a superuser (optional, for admin access)
+python manage.py createsuperuser
+
+# 7. Start the development server
+python manage.py runserver
+```
+
+Then open **http://127.0.0.1:8000/** in your browser.
+
+---
+
+## 📱 Responsive Design
+
+WorkWhiz is fully responsive across all screen sizes:
+
+| Breakpoint | Target |
+|-----------|--------|
+| `< 480px` | Mobile phones (portrait) |
+| `481px – 768px` | Tablets & large phones |
+| `> 769px` | Desktops & laptops |
+
+All pages include the `<meta name="viewport">` tag and use CSS media queries for fluid layouts, flexible navigation wrapping, and touch-friendly targets.
+
+---
+
+## 👥 Team
+
+<table>
+<tr>
+<td align="center"><strong>Shaikh Abdulrauf</strong><br>Backend Developer<br><em>Django, Python, C++</em></td>
+<td align="center"><strong>Chauhan Dev</strong><br>Frontend Developer<br><em>HTML, CSS, JavaScript</em></td>
+<td align="center"><strong>Shah Jinay</strong><br>Creative Developer<br><em>Web Dev, Animation, Design</em></td>
+</tr>
+</table>
+
+---
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to your branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+---
+
+<div align="center">
+
+**Built with ❤️ by the WorkWhiz Team**
+
+[GitHub](https://github.com/ARShaikh0801) • [LinkedIn](https://www.linkedin.com/in/shaikh-abdulrauf-asifparvez-b4485435a)
+
+</div>

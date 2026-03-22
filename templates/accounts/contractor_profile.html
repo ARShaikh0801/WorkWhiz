@@ -15,70 +15,26 @@
         label { display: block; font-weight: bold; margin-bottom: 5px; }
         input, textarea { width: 90%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
         textarea { height: 100px; }
-        button { background-color: #1e90ff; color: white; padding: 12px 30px; border: none; border-radius: none; border-radius: 30px; cursor: pointer; font-size: 16px; }
+        button { background-color: #1e90ff; color: white; padding: 12px 30px; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; }
         button:hover { background-color: #0066cc; }
         .messages .message { padding: 12px; margin-bottom: 10px; border-radius: 5px; }
         .messages .message.error { background-color: #ffdddd; border: 1px solid #f44336; }
         @media (max-width: 600px) { .container { padding: 15px; } input, textarea { font-size: 14px; } }
     </style>
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-        // Restore saved language
-        var savedLang = localStorage.getItem('google_translate_language');
-        if (savedLang) {
-            setTimeout(function() {
-                var select = document.querySelector('#google_translate_element select');
-                if (select) {
-                    for (var i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === savedLang) {
-                            select.selectedIndex = i;
-                            select.dispatchEvent(new Event('change'));
-                            break;
-                        }
-                    }
-                }
-            }, 1000); // Delay to ensure widget is loaded
-        }
-    }
-    // Save language on change
-    document.addEventListener('DOMContentLoaded', function() {
-        var select = document.querySelector('#google_translate_element select');
-        if (select) {
-            select.addEventListener('change', function() {
-                var langCode = this.value;
-                localStorage.setItem('google_translate_language', langCode);
-            });
-        }
-    });
-</script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
     <div class="top-strip">
         <div class="nav-left">
             <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
         </div>
-    <div class="nav-right">
-        <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item">Dashboard</a>
-        <a href="{% url 'accounts:edit_contractor_profile' %}" class="nav-item">Edit Profile</a>
-        <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-        <div id="google_translate_element"></div>
+        <div class="nav-right">
+            <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item">Dashboard</a>
+            <a href="{% url 'accounts:edit_contractor_profile' %}" class="nav-item">Edit Profile</a>
+            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
+            <div id="google_translate_element"></div>
+        </div>
     </div>
-</div>
     <div class="container">
         <div class="profile-header">
             {% if profile.profile_image %}
@@ -111,6 +67,5 @@
             <p><strong>Address:</strong> {{ profile.address }}</p>
         </div>
     </div>
-    
 </body>
 </html>

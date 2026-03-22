@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rate Worker - WorkWiz</title>
+    <title>Rate Worker - WorkWhiz</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
         .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -20,55 +20,13 @@
         .messages .message { padding: 10px; margin-bottom: 10px; border-radius: 5px; }
         .messages .error { background-color: #ffdddd; border: 1px solid #f44336; color: #f44336; }
         .messages .success { background-color: #ddffdd; border: 1px solid #4CAF50; color: #4CAF50; }
-        .top-strip { background-color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .nav-left img { height: 40px; width: 180px; object-fit: contain; transform: scale(1.6); margin-left: -10px; }
-        .nav-right { display: flex; gap: 20px; align-items: center; }
-        .nav-item { color: #444; font-size: 18px; font-weight: 500; text-decoration: none; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease; }
-        .nav-item:hover { background-color: #1e90ff; color: white; }
-        #google_translate_element { margin-left: 20px; }
-        #google_translate_element select { padding: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
-        @media (max-width: 600px) { .container { padding: 15px; } select, textarea { font-size: 14px; } .top-strip { flex-direction: column; gap: 10px; } .nav-right { flex-wrap: wrap; gap: 10px; justify-content: center; } }
+        @media (max-width: 600px) { .container { padding: 15px; } select, textarea { font-size: 14px; } }
     </style>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-            var savedLang = localStorage.getItem('google_translate_language');
-            if (savedLang) {
-                setTimeout(function() {
-                    var select = document.querySelector('#google_translate_element select');
-                    if (select) {
-                        for (var i = 0; i < select.options.length; i++) {
-                            if (select.options[i].value === savedLang) {
-                                select.selectedIndex = i;
-                                select.dispatchEvent(new Event('change'));
-                                break;
-                            }
-                        }
-                    }
-                }, 1000);
-            }
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.png' %}" alt="WorkWiz Logo" class="logo">
-        </div>
-        <div class="nav-right">
-            <a href="{% url 'accounts:index' %}" class="nav-item">Home</a>
-            <a href="{% url 'accounts:about_us' %}" class="nav-item">About Us</a>
-            <a href="{% url 'accounts:services' %}" class="nav-item">Services</a>
-            <a href="{% url 'accounts:help_center' %}" class="nav-item">Help</a>
-            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
+    {% include 'partials/_navbar_rating.html' %}
+
     <div class="container">
         <h1>Rate Worker: {{ worker.full_name }}</h1>
         {% if messages %}
@@ -102,16 +60,5 @@
             </div>
         </form>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var select = document.querySelector('#google_translate_element select');
-            if (select) {
-                select.addEventListener('change', function() {
-                    var langCode = this.value;
-                    localStorage.setItem('google_translate_language', langCode);
-                });
-            }
-        });
-    </script>
 </body>
 </html>

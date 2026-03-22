@@ -12,8 +12,8 @@
         .job-table th, .job-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
         .job-table th { background-color: #f4f7fb; font-weight: bold; text-align: center; }
         .job-table td { text-align: center; }
-        .job-table td:first-child, .job-table th:first-child { text-align: left; } /* Left-align Title column */
-        .job-table td:nth-child(2), .job-table th:nth-child(2) { text-align: left; } /* Left-align Location column */
+        .job-table td:first-child, .job-table th:first-child { text-align: left; }
+        .job-table td:nth-child(2), .job-table th:nth-child(2) { text-align: left; }
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
         .status-badge.active { background-color: #e7f9e7; color: #4CAF50; }
         .action-btn { background: none; border: none; cursor: pointer; font-size: 18px; margin-right: 10px; color: #1e90ff; }
@@ -43,44 +43,11 @@
             .action-button { padding: 8px 16px; font-size: 14px; }
         }
     </style>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-            var savedLang = localStorage.getItem('google_translate_language');
-            if (savedLang) {
-                setTimeout(function() {
-                    var select = document.querySelector('#google_translate_element select');
-                    if (select) {
-                        for (var i = 0; i < select.options.length; i++) {
-                            if (select.options[i].value === savedLang) {
-                                select.selectedIndex = i;
-                                select.dispatchEvent(new Event('change'));
-                                break;
-                            }
-                        }
-                    }
-                }, 1000);
-            }
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
-        </div>
-        <div class="nav-right">
-            <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item">Dashboard</a>
-            <a href="{% url 'accounts:contractor_profile' %}" class="nav-item">Profile</a>
-            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
+    {% include 'partials/_navbar_contractor.html' %}
+
     <div class="container">
         <h1>My Jobs</h1>
         {% if messages %}
@@ -206,16 +173,6 @@
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('deleteModal').style.display = 'none';
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var select = document.querySelector('#google_translate_element select');
-            if (select) {
-                select.addEventListener('change', function() {
-                    var langCode = this.value;
-                    localStorage.setItem('google_translate_language', langCode);
-                });
-            }
-        });
     </script>
 </body>
 </html>

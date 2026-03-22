@@ -3,67 +3,13 @@
 <html lang="{{ language|default:'en' }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WorkWhiz - Home</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-        // Restore saved language
-        var savedLang = localStorage.getItem('google_translate_language');
-        if (savedLang) {
-            setTimeout(function() {
-                var select = document.querySelector('#google_translate_element select');
-                if (select) {
-                    for (var i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === savedLang) {
-                            select.selectedIndex = i;
-                            select.dispatchEvent(new Event('change'));
-                            break;
-                        }
-                    }
-                }
-            }, 1000); // Delay to ensure widget is loaded
-        }
-    }
-    // Save language on change
-    document.addEventListener('DOMContentLoaded', function() {
-        var select = document.querySelector('#google_translate_element select');
-        if (select) {
-            select.addEventListener('change', function() {
-                var langCode = this.value;
-                localStorage.setItem('google_translate_language', langCode);
-            });
-        }
-    });
-</script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.jpg' %}" alt="Work Whiz Logo" class="logo" />
-        </div>  
-        <div class="nav-right">
-            <a href="{% url 'accounts:index' %}"><span class="nav-item">Home</span></a>
-            <a href="{% url 'accounts:about_us' %}"><span class="nav-item">About Us</span></a>
-            <a href="{% url 'accounts:services' %}"><span class="nav-item">Services</span></a>
-            <a href="{% url 'accounts:help_center' %}"><span class="nav-item">Help Center</span></a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
+    {% include 'partials/_navbar_public.html' %}
 
     <div class="background-img">
         <div class="animated-quote">
@@ -101,7 +47,5 @@
             <p>© 2025 WorkWhiz. All Rights Reserved.</p>
         </footer>
     </div>
-
-    
 </body>
 </html>

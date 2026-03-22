@@ -19,62 +19,18 @@
         button:hover { background-color: #0066cc; }
         .subworker-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .subworker-table th, .subworker-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
-        .subworker-table td{ align-items: center;}
+        .subworker-table td { align-items: center; }
         .subworker-table th { background-color: #f4f7fb; font-weight: bold; }
         .action-btn { color: black; background: none; border: none; cursor: pointer; font-size: 18px; margin-right: 10px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; }
         .modal-content { background-color: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 500px; border-radius: 12px; }
         .close { cursor: pointer; float: right; font-size: 20px; }
-        input, textarea{width: 90%;}
+        input, textarea { width: 90%; }
         .messages .message { padding: 12px; margin-bottom: 10px; border-radius: 5px; }
         .messages .message.error { background-color: #ffdddd; border: 1px solid #f44336; }
         @media (max-width: 600px) { .container { padding: 15px; } input, textarea { font-size: 14px; } .subworker-table { display: block; overflow-x: auto; } }
     </style>
-    <script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-<script>
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,gu,ta,mr,hi,kn,te,ml,bn,pa,or,ur,as,ks,si,br,ko,ne,sd',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-        // Restore saved language
-        var savedLang = localStorage.getItem('google_translate_language');
-        if (savedLang) {
-            setTimeout(function() {
-                var select = document.querySelector('#google_translate_element select');
-                if (select) {
-                    for (var i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === savedLang) {
-                            select.selectedIndex = i;
-                            select.dispatchEvent(new Event('change'));
-                            break;
-                        }
-                    }
-                }
-            }, 1000); // Delay to ensure widget is loaded
-        }
-    }
-    // Save language on change
-    document.addEventListener('DOMContentLoaded', function() {
-        var select = document.querySelector('#google_translate_element select');
-        if (select) {
-            select.addEventListener('change', function() {
-                var langCode = this.value;
-                localStorage.setItem('google_translate_language', langCode);
-            });
-        }
-    });
-</script>
+    {% include 'partials/_google_translate.html' %}
 </head>
 <body>
     <div class="top-strip">
@@ -210,7 +166,6 @@
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('deleteModal').style.display = 'none';
         }
-        
     </script>
 </body>
 </html>
