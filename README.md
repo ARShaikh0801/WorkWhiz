@@ -14,6 +14,18 @@
 
 </div>
 
+<div align="center">
+  <h2>✨ Checkout Live Demo</h2>
+  
+  [![Live Demo](https://img.shields.io/badge/See_Live_Demo-4F46E5?style=for-the-badge&logo=github&logoColor=white)](https://workwhiz.onrender.com)
+</div>
+
+## 📸 Screenshots
+*(Add your project screenshots here)*
+
+
+---
+
 ## 🌟 Features
 
 <table>
