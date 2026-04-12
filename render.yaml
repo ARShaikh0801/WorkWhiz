@@ -3,7 +3,7 @@ services:
     name: workwhiz
     env: python
     buildCommand: "./build.sh"
-    startCommand: "python manage.py migrate && gunicorn WorkWhiz.wsgi:application --bind 0.0.0.0:10000"
+    startCommand: "python manage.py migrate && gunicorn WorkWhiz.wsgi:application --bind 0.0.0.0:$PORT"
     plan: free
     envVars:
       - key: DJANGO_SETTINGS_MODULE
