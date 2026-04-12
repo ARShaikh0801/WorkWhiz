@@ -31,10 +31,6 @@ media/profile_images/
 Thumbs.db
 desktop.ini
 
-# Migrations (auto-generated)
-**/migrations/*.py
-!**/migrations/__init__.py
-
 # Logs
 *.log
 
