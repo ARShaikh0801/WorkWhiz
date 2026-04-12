@@ -1,51 +1,187 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - Team Members</title>
-    <link rel="stylesheet" href="{% static 'css/style-aboutus.css' %}">
-    {% include 'partials/_google_translate.html' %}
-  </head>
-  <body>
-    {% include 'partials/_navbar_public.html' %}
 
-    <div class="container">
-      <header>
-        <h1>Meet Our Team</h1>
-        <p>Dedicated to Making a Difference</p>
-      </header>
+{% block title %}About Us — WorkWhiz Team{% endblock %}
 
-      <div class="team-section">
-        <div class="member-card">
-          <img src="{% static 'images/abdul.jpg' %}" alt="Shaikh Abdulrauf" />
-          <h3>Shaikh Abdulrauf</h3>
-          <h5>Contact: +91-XXXXX-XXXXX</h5>
-          <h5>Email: arauf0801@gmail.com</h5>
-          <p class="description">Backend developer with a love for secure, scalable systems using Django. Also enjoys frontend enhancements. Skilled in C++, HTML, CSS.</p>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .about-container {
+            max-width: 1200px;
+            margin: 30px auto 60px auto;
+            padding: 0 1.5rem 1rem 1.5rem;
+            text-align: center;
+        }
+
+        .about-header {
+            margin-bottom: 3.3rem;
+        }
+
+        .about-header h1 {
+            font-size: var(--text-4xl);
+            margin-bottom: 0.8rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .about-header p {
+            font-size: var(--text-lg);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .member-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: all var(--transition);
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .member-card:hover::before {
+            opacity: 1;
+        }
+
+        .member-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            border: 4px solid var(--bg);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .member-card h3 {
+            font-size: var(--text-xl);
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .member-contact {
+            margin-bottom: 1.25rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            min-width: 0;
+        }
+
+        .contact-item svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--primary);
+        }
+
+        .member-card .description {
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            line-height: 1.7;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        @media (max-width: 640px) {
+            .about-header h1 { font-size: var(--text-3xl); }
+            .team-grid { grid-template-columns: 1fr; }
+            .member-card { padding: 2rem; }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="about-container">
+        <div class="about-header">
+            <h1>Meet Our Team</h1>
+            <p>The creative minds building the future of workforce connections at WorkWhiz</p>
         </div>
 
-        <div class="member-card">
-          <img src="{% static 'images/dev.jpg' %}" alt="Chauhan Dev" />
-          <h3>Chauhan Dev</h3>
-          <h5>Contact: +91-XXXXX-XXXXX</h5>
-          <h5>Email: devc08412@gmail.com</h5>
-          <p class="description">Frontend enthusiast building responsive, elegant UIs using HTML, CSS, JavaScript and has Database knowledge.</p>
-        </div>
+        <div class="team-grid">
+            <div class="member-card">
+                <img src="{% static 'images/abdul.jpg' %}" alt="Shaikh Abdulrauf" class="member-image" />
+                <h3>Shaikh Abdulrauf</h3>
+                <div class="member-contact">
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        +91-XXXXX-XXXXX
+                    </div>
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        arauf0801@gmail.com
+                    </div>
+                </div>
+                <p class="description">Full-stack developer passionate about building secure, scalable systems with Django. Specializes in backend architecture, API design, and frontend polishing.</p>
+            </div>
 
-        <div class="member-card">
-          <img src="{% static 'images/jinay.jpg' %}" alt="Shah Jinay" />
-          <h3>Shah Jinay</h3>
-          <h5>Contact: +91-XXXXX-XXXXX</h5>
-          <h5>Email: jinayshah2207@gmail.com</h5>
-          <p class="description">Creative problem solver who enjoys web development, animation, and game design. Loves tackling challenges, exploring new places, and freelancing his way toward a future in business.</p>
-        </div>
-      </div>
+            <div class="member-card">
+                <img src="{% static 'images/dev.jpg' %}" alt="Chauhan Dev" class="member-image" />
+                <h3>Chauhan Dev</h3>
+                <div class="member-contact">
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        +91-XXXXX-XXXXX
+                    </div>
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        devc08412@gmail.com
+                    </div>
+                </div>
+                <p class="description">Frontend craftsman who transforms designs into responsive, pixel-perfect interfaces. Expert in HTML, CSS, JavaScript, and database management with an eye for elegant UX.</p>
+            </div>
 
-      <footer>
-        <p>&copy; 2025 WorkWhiz. All Rights Reserved.</p>
-      </footer>
+            <div class="member-card">
+                <img src="{% static 'images/jinay.jpg' %}" alt="Shah Jinay" class="member-image" />
+                <h3>Shah Jinay</h3>
+                <div class="member-contact">
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        +91-XXXXX-XXXXX
+                    </div>
+                    <div class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        jinayshah2207@gmail.com
+                    </div>
+                </div>
+                <p class="description">Creative problem solver with a passion for web development, animation, and interactive design. Loves tackling complex challenges and bringing innovative ideas to life.</p>
+            </div>
+        </div>
     </div>
-  </body>
-</html>
+{% endblock content %}

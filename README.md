@@ -5,8 +5,9 @@
 ### Connecting Workers & Contractors — Seamlessly
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Django](https://img.shields.io/badge/Django-4.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
-[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![Django](https://img.shields.io/badge/Django-5.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://workwhiz.onrender.com)
 
 *A full-stack platform that bridges the gap between skilled workers and contractors. Workers showcase their expertise, contractors find the right talent — fast, reliable, and hassle-free.*
 
@@ -15,7 +16,7 @@
 </div>
 
 <div align="center">
-  <h2>✨ Checkout Live Demo</h2>
+  <h2>✨ Live Demo</h2>
   
   [![Live Demo](https://img.shields.io/badge/See_Live_Demo-4F46E5?style=for-the-badge&logo=github&logoColor=white)](https://workwhiz.onrender.com)
 </div>
@@ -38,6 +39,7 @@
 - 👥 Add team members / sub-workers
 - ⭐ Rate contractors & jobs
 - 📊 Track application status in real-time
+- 📍 Filter jobs by your location
 - 🌐 Multi-language support (18 languages)
 
 </td>
@@ -49,7 +51,8 @@
 - ✅ Accept / reject worker applications
 - ⭐ Rate workers after completion
 - 📈 Dashboard with job & applicant overview
-- 🔔 Real-time notifications
+- ✏️ Edit & manage posted jobs
+- 🗑️ Delete job listings
 
 </td>
 </tr>
@@ -59,7 +62,8 @@
 - User registration with role selection (Worker / Contractor)
 - Secure login with password hashing
 - Password reset via email with token validation
-- Profile image upload with size/type validation
+- Live password strength meter on signup
+- Profile image upload with validation
 
 ### 🌐 Internationalization
 - Google Translate integration supporting **18 regional languages**
@@ -72,13 +76,13 @@
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Django 4.x (Python 3.10+) |
-| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
-| **Database** | SQLite (default) |
+| **Backend** | Django 5.x (Python 3.10+) |
+| **Frontend** | HTML5, CSS3 (Custom Design System), Vanilla JavaScript |
+| **Database** | PostgreSQL (Supabase) / SQLite (local dev) |
 | **Static Files** | WhiteNoise (production-ready) |
 | **Email** | SMTP via Gmail |
 | **i18n** | Google Translate API |
-| **Deployment** | Render / Railway / any WSGI server |
+| **Deployment** | Render |
 
 ---
 
@@ -92,40 +96,44 @@ WorkWhiz/
 │   └── wsgi.py            # WSGI entry point
 ├── accounts/              # Main Django app
 │   ├── models.py          # User, Job, Application, Rating models
-│   ├── views.py           # All view logic (21 views)
+│   ├── views.py           # All view logic
 │   ├── forms.py           # Registration, profile, job, rating forms
 │   ├── urls.py            # App URL patterns
 │   └── admin.py           # Admin site configuration
 ├── templates/             # Django templates
 │   ├── partials/          # Reusable template includes
 │   │   ├── _google_translate.html
-│   │   ├── _navbar_public.html
-│   │   ├── _navbar_contractor.html
-│   │   ├── _navbar_worker.html
-│   │   └── _navbar_rating.html
+│   │   └── _navbar_unified.html
 │   ├── accounts/          # Account-specific templates
 │   │   ├── contractor_dashboard.html
 │   │   ├── worker_dashboard.html
 │   │   ├── contractor_profile.html
 │   │   ├── worker_profile.html
+│   │   ├── worker_detail.html
 │   │   ├── post-job.html
 │   │   ├── my-jobs.html
-│   │   └── ...            # Rating, password reset templates
+│   │   ├── rate_job.html
+│   │   ├── rate_worker.html
+│   │   └── rate_contractor.html
 │   ├── index.html         # Landing page
+│   ├── base.html          # Base template
 │   ├── about_us.html      # Team page
 │   ├── services.html      # Services overview
 │   ├── help_center.html   # FAQ & contact
+│   ├── edit_profile.html  # Profile editor
 │   ├── log_in.html        # Login form
 │   └── sign_up.html       # Registration form
 ├── static/
-│   ├── css/               # Stylesheets
-│   │   ├── styles.css     # Base styles + responsive breakpoints
-│   │   ├── contractor_dashboard.css
-│   │   ├── worker_dashboard.css
-│   │   └── ...            # Page-specific CSS
+│   ├── css/
+│   │   ├── styles.css       # Design system + responsive styles
+│   │   └── style-signup.css # Signup-specific styles
 │   └── images/            # Logos, team photos, defaults
+├── media/                 # User-uploaded files (gitignored)
 ├── requirements.txt       # Python dependencies
+├── build.sh               # Render build script
+├── render.yaml            # Render deployment config
 ├── manage.py              # Django CLI
+├── .env.example           # Environment variable template
 └── .env                   # Environment variables (not committed)
 ```
 
@@ -155,7 +163,8 @@ venv\Scripts\activate         # Windows
 pip install -r requirements.txt
 
 # 4. Set up environment variables
-#    Create a .env file in the project root:
+cp .env.example .env
+#    Then edit .env with your actual values
 ```
 
 ```env
@@ -163,10 +172,13 @@ SECRET_KEY=your-secret-key-here
 EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 DEFAULT_FROM_EMAIL=your-email@gmail.com
+DATABASE_URL=                 # Leave empty for local SQLite
+DEBUG=True
 ```
 
 ```bash
 # 5. Run database migrations
+python manage.py makemigrations
 python manage.py migrate
 
 # 6. Create a superuser (optional, for admin access)
@@ -191,6 +203,18 @@ WorkWhiz is fully responsive across all screen sizes:
 | `> 769px` | Desktops & laptops |
 
 All pages include the `<meta name="viewport">` tag and use CSS media queries for fluid layouts, flexible navigation wrapping, and touch-friendly targets.
+
+---
+
+## 🚀 Deployment (Render)
+
+This project is configured for one-click deployment on [Render](https://render.com):
+
+1. Fork this repository
+2. Create a new **Web Service** on Render
+3. Connect your GitHub repo
+4. Render will auto-detect `render.yaml` and configure everything
+5. Set the email environment variables in the Render dashboard
 
 ---
 

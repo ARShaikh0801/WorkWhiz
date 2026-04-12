@@ -54,8 +54,8 @@ urlpatterns = [
     path('notifications/', views.get_notifications, name='notifications'),
     
     # Rating Views
-    path('rate_contractor/<int:contractor_id>/', views.rate_contractor, name='rate_contractor'),
-    path('rate_worker/<int:worker_id>/', views.rate_worker, name='rate_worker'),
+    path('rate_contractor/<int:contractor_id>/<int:job_id>/', views.rate_contractor, name='rate_contractor'),
+    path('rate_worker/<int:worker_id>/<int:job_id>/', views.rate_worker, name='rate_worker'),
     path('rate_job/<int:job_id>/', views.rate_job, name='rate_job'),
     
     # Other Pages

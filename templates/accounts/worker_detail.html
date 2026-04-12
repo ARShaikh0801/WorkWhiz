@@ -1,45 +1,173 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worker Details - WorkWhiz</title>
+
+{% block title %}{{ worker.user.full_name }} — WorkWhiz{% endblock %}
+
+{% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .profile-header { text-align: center; margin-bottom: 30px; }
-        .profile-pic img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #1e90ff; }
-        .rating { color: gold; font-size: 20px; margin-top: 10px; }
-        .profile-details p { margin: 10px 0; font-size: 16px; text-align: center; }
-        .rate-btn { background-color: #1e90ff; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
-        .rate-btn:hover { background-color: #0066cc; }
-        @media (max-width: 600px) { .container { padding: 15px; } .profile-details p { font-size: 14px; } }
-    </style>
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    {% include 'partials/_navbar_contractor.html' %}
+        .detail-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 1.5rem;
+        }
 
-    <div class="container">
-        <div class="profile-header">
-            {% if worker.profile_image %}
-                <img src="{{ worker.profile_image.url }}" alt="Profile Image" class="profile-pic">
-            {% else %}
-                <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="profile-pic">
-            {% endif %}
-            <h1>{{ worker.user.full_name }}</h1>
-            <p>Worker</p>
-            <div class="rating">Rating: {{ average_rating|floatformat:1 }} / 5</div>
+        .detail-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+        }
+
+        .detail-sidebar {
+            background: var(--bg);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-right: 1px solid var(--border);
+        }
+
+        .detail-main {
+            padding: 3.5rem;
+        }
+
+        .detail-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-name {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-role {
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            background: var(--primary-light);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #f59e0b;
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .info-item {
+            min-width: 0;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item p {
+            font-size: var(--text-base);
+            color: var(--text);
+            line-height: 1.6;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            padding: 0.375rem 1rem;
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 850px) {
+            .detail-card { grid-template-columns: 1fr; }
+            .detail-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+            .detail-main { padding: 2.5rem 1.5rem; }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="detail-container">
+        <div class="detail-card">
+            <div class="detail-sidebar">
+                {% if worker.profile_image %}
+                    <img src="{{ worker.profile_image.url }}" alt="{{ worker.user.full_name }}" class="detail-avatar">
+                {% else %}
+                    <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="detail-avatar">
+                {% endif %}
+                <h1 class="detail-name">{{ worker.user.full_name }}</h1>
+                <span class="detail-role">Worker</span>
+                
+                <div class="detail-rating">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem; fill: currentColor;" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
+                    <span>{{ average_rating|floatformat:1 }}/5</span>
+                    <span style="font-weight: 400; color: var(--text-muted); font-size: 0.8125rem;">({{ rating_count }} reviews)</span>
+                </div>
+            </div>
+
+            <div class="detail-main">
+                <div class="info-grid">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem;">
+                        <div class="info-item">
+                            <label>Email Address</label>
+                            <p>{{ worker.user.email }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone Number</label>
+                            <p>{{ worker.user.contact_number }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Location</label>
+                        <p>{{ worker.user.city }}{% if worker.address %}, {{ worker.address }}{% endif %}</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Skills & Expertise</label>
+                        <div style="margin-top: 0.5rem;">
+                            {% if worker.user.skills_description %}
+                                <p>{{ worker.user.skills_description }}</p>
+                            {% else %}
+                                <p style="color: var(--text-muted); font-style: italic;">No specific skills listed.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="profile-details">
-            <p><strong>Email:</strong> {{ worker.user.email }}</p>
-            <p><strong>Contact:</strong> {{ worker.user.contact_number }}</p>
-            <p><strong>City:</strong> {{ worker.user.city }}</p>
-            <p><strong>Skills:</strong> {{ worker.user.skills_description }}</p>
-            <p><strong>Address:</strong> {{ worker.address }}</p>
-        </div>
-        <a href="{% url 'accounts:rate_worker' worker.user.id %}" class="rate-btn">Rate Worker</a>
     </div>
-</body>
-</html>
+{% endblock content %}

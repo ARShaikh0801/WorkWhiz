@@ -1,71 +1,187 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Profile - WorkWhiz</title>
+
+{% block title %}Contractor Profile - WorkWhiz{% endblock %}
+
+{% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
-        .container { max-width: 800px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .profile-header { text-align: center; margin-bottom: 30px; }
-        .profile-pic img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #1e90ff; }
-        .rating { color: green; font-size: 20px; margin-top: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, textarea { width: 90%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
-        textarea { height: 100px; }
-        button { background-color: #1e90ff; color: white; padding: 12px 30px; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0066cc; }
-        .messages .message { padding: 12px; margin-bottom: 10px; border-radius: 5px; }
-        .messages .message.error { background-color: #ffdddd; border: 1px solid #f44336; }
-        @media (max-width: 600px) { .container { padding: 15px; } input, textarea { font-size: 14px; } }
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 1.5rem;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .profile-pic-wrapper {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 2rem;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .profile-info h1 {
+            font-size: var(--text-2xl);
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .profile-info .role-badge {
+            background: var(--bg);
+            color: var(--primary);
+            padding: 0.375rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.850rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: #f59e0b;
+            margin-bottom: 2rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .detail-item {
+            min-width: 0;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item span {
+            font-size: var(--text-base);
+            color: var(--text);
+            font-weight: 500;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            display: block;
+        }
+
+        .profile-actions {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+            .profile-card { padding: 2rem 1.5rem; }
+            .details-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+            .profile-actions { flex-direction: column; }
+            .profile-actions .btn-primary { width: 100%; }
+        }
     </style>
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
-        </div>
-        <div class="nav-right">
-            <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item">Dashboard</a>
-            <a href="{% url 'accounts:edit_contractor_profile' %}" class="nav-item">Edit Profile</a>
-            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="profile-header">
-            {% if profile.profile_image %}
-                <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="profile-pic">
-            {% else %}
-                <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="profile-pic">
+{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-pic-wrapper">
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="profile-pic">
+                {% else %}
+                    <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="profile-pic">
+                {% endif %}
+            </div>
+
+            <div class="profile-info">
+                <h1>{{ user_profile.full_name }}</h1>
+                <span class="role-badge">Contractor</span>
+                
+                <div class="rating-display">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; fill: currentColor;" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
+                    <span>{{ average_rating|floatformat:1 }}</span>
+                    <span style="font-size: var(--text-sm); font-weight: 500; color: var(--text-muted);">({{ rating_count }} reviews)</span>
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="messages" style="margin-bottom: 2rem;">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
             {% endif %}
-            <h1>{{ user_profile.full_name }}</h1>
-            <p>Contractor</p>
-            <div class="rating">Rating: {{ average_rating|floatformat:1 }} / 5</div>
-        </div>
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <label>Email Address</label>
+                    <span>{{ user_profile.email }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Contact Number</label>
+                    <span>{{ user_profile.contact_number }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Location</label>
+                    <span>{{ user_profile.city }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Age / Gender</label>
+                    <span>{{ user_profile.age|default:"—" }} / {{ user_profile.gender|default:"—" }}</span>
+                </div>
+                <div class="detail-item" style="grid-column: span 1;">
+                    <label>Skills & Expertise</label>
+                    <span>{{ user_profile.skills_description|default:"No description provided." }}</span>
+                </div>
+                <div class="detail-item" style="grid-column: span 1;">
+                    <label>Registered Address</label>
+                    <span>{{ profile.address|default:"No address provided." }}</span>
+                </div>
             </div>
-        {% endif %}
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-buttons">
-                <button type="submit">Update Profile</button>
+
+            <div class="profile-actions">
+                <a href="{% url 'accounts:edit_contractor_profile' %}" class="btn-primary" style="padding-left: 2.5rem; padding-right: 2.5rem;">Edit My Profile</a>
+                
+                <form method="POST" enctype="multipart/form-data" id="photo-form" style="display: none;">
+                    {% csrf_token %}
+                    <input type="file" id="profile_image" name="profile_image" accept="image/*" onchange="document.getElementById('photo-form').submit()">
+                </form>
+                <button type="button" class="btn-outline" onclick="document.getElementById('profile_image').click()" style="padding: 0.875rem 2rem;">Update Photo</button>
             </div>
-        </form>
-        <div class="profile-details">
-            <p><strong>Email:</strong> {{ user_profile.email }}</p>
-            <p><strong>Contact:</strong> {{ user_profile.contact_number }}</p>
-            <p><strong>City:</strong> {{ user_profile.city }}</p>
-            <p><strong>Address:</strong> {{ profile.address }}</p>
         </div>
     </div>
-</body>
-</html>
+{% endblock content %}

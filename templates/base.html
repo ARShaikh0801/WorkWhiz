@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WorkWhiz{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block stylesheets %}{% endblock %}
+    {% include 'partials/_google_translate.html' %}
+</head>
+<body>
+    {% include 'partials/_navbar_unified.html' %}
+
+    {% block content %}
+    {% endblock content %}
+
+    {% block bottom_strip %}
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock scripts %}
+</body>
+</html>

@@ -1,101 +1,184 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - WorkWhiz</title>
+
+{% block title %}Edit Profile — WorkWhiz{% endblock %}
+
+{% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        .form-buttons { text-align: center; margin-top: 20px; }
-        button { padding: 12px 30px; background-color: #1e90ff; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0066cc; }
-        @media (max-width: 600px) { .container { padding: 15px; } input, select, textarea { font-size: 14px; } }
+        .edit-profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 1.5rem 4rem;
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            font-size: var(--text-lg);
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .profile-photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-glow);
+            margin-bottom: 1rem;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .btn-save {
+            width: 200px;
+        }
+
+        @media (max-width: 640px) {
+            .form-section { padding: 1.5rem; }
+            .btn-save { width: 100%; }
+        }
     </style>
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    <div class="top-strip">
-        <div class="nav-left">
-            <img src="{% static 'images/logo.jpg' %}" alt="WorkWhiz Logo" class="logo">
+{% endblock %}
+
+{% block content %}
+    <div class="edit-profile-container">
+        <div class="dashboard-header" style="margin-bottom: 2rem;">
+            <h1>Edit Your Profile</h1>
+            <p class="form-subtitle" style="margin: 0; color: var(--text-muted);">Keep your information up to date</p>
         </div>
-        <div class="nav-right">
-            <a href="{% url 'accounts:index' %}" class="nav-item">Home</a>
-            <a href="{% url 'accounts:about_us' %}" class="nav-item">About Us</a>
-            <a href="{% url 'accounts:services' %}" class="nav-item">Services</a>
-            <a href="{% url 'accounts:help_center' %}" class="nav-item">Help</a>
-            <a href="{% url 'accounts:log_out' %}" class="nav-item">Logout</a>
-            <div id="google_translate_element"></div>
-        </div>
-    </div>
-    <div class="container">
-        <h1>Edit Profile</h1>
+
         {% if messages %}
-            <div class="messages">
+            <div class="messages" style="margin-bottom: 1.5rem;">
                 {% for message in messages %}
                     <div class="message {{ message.tags }}">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="full_name">Full Name</label>
-                <input type="text" id="full_name" name="full_name" value="{{ user_profile.full_name }}" required>
+
+            <div class="form-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    Personal Information
+                </h2>
+
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" value="{{ user_profile.full_name }}" required placeholder="Your full name">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact_number">Phone Number</label>
+                        <input type="text" id="contact_number" name="contact_number" value="{{ user_profile.contact_number }}" required placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="form-group" style="max-width: 120px;">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" value="{{ user_profile.age }}" min="18" max="100">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" class="form-control">
+                            <option value="Male" {% if user_profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if user_profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if user_profile.gender == 'Other' %}selected{% endif %}>Other</option>
+                            <option value="not added" {% if user_profile.gender == 'not added' %}selected{% endif %}>Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" value="{{ user_profile.city }}" required placeholder="Your city">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="contact_number">Contact Number</label>
-                <input type="text" id="contact_number" name="contact_number" value="{{ user_profile.contact_number }}" required>
+
+            <div class="form-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 .621-.504 1.125-1.125 1.125H4.875A1.125 1.125 0 013.75 18.4V14.15m16.5 0a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25m16.5 0l-2.25-2.25h-12l-2.25 2.25m16.5 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v8.15m7.5-3.15V12m0 0v1.5m0-1.5h1.5m-1.5 0h-1.5" /></svg>
+                    Professional Details
+                </h2>
+
+                <div class="form-group">
+                    <label for="skills_description">Skills & Expertise</label>
+                    <textarea id="skills_description" name="skills_description" rows="3" placeholder="Describe your skills and experience...">{{ user_profile.skills_description|default:'' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Full Address</label>
+                    <textarea name="address" id="address" rows="2" placeholder="Your street address, apartment, etc.">{{ form.instance.address|default:'' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile_image">Profile Photo</label>
+                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                        {% if user_profile.workerprofile.profile_image %}
+                            <img src="{{ user_profile.workerprofile.profile_image.url }}" class="profile-photo-preview" alt="Current Photo">
+                        {% elif user_profile.contractorprofile.profile_image %}
+                            <img src="{{ user_profile.contractorprofile.profile_image.url }}" class="profile-photo-preview" alt="Current Photo">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.jpeg' %}" class="profile-photo-preview" alt="Default Photo">
+                        {% endif %}
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*" class="form-control-file">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="age">Age</label>
-                <input type="number" id="age" name="age" value="{{ user_profile.age }}">
+
+            <div class="form-section">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                    Security
+                </h2>
+                
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Only fill these if you want to change your password.</p>
+
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" placeholder="Enter current password" autocomplete="current-password">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" placeholder="New password" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" autocomplete="new-password">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="gender">Gender</label>
-                <select id="gender" name="gender">
-                    <option value="Male" {% if user_profile.gender == 'Male' %}selected{% endif %}>Male</option>
-                    <option value="Female" {% if user_profile.gender == 'Female' %}selected{% endif %}>Female</option>
-                    <option value="Other" {% if user_profile.gender == 'Other' %}selected{% endif %}>Other</option>
-                    <option value="not added" {% if user_profile.gender == 'not added' %}selected{% endif %}>Prefer not to say</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="skills_description">Skills Description</label>
-                <textarea id="skills_description" name="skills_description">{{ user_profile.skills_description }}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" value="{{ user_profile.city }}" required>
-            </div>
-            <div class="form-group">
-                <label for="profile_image">Profile Image</label>
-                <input type="file" id="profile_image" name="profile_image">
-            </div>
-            <div class="form-group">
-                <label for="address">Address</label>
-                <textarea name="address" id="address">{{user_profile.address}}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="current_password">Current Password (if changing password)</label>
-                <input type="password" id="current_password" name="current_password">
-            </div>
-            <div class="form-group">
-                <label for="new_password">New Password</label>
-                <input type="password" id="new_password" name="new_password">
-            </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirm New Password</label>
-                <input type="password" id="confirm_password" name="confirm_password">
-            </div>
+
             <div class="form-buttons">
-                <button type="submit">Save Changes</button>
+                {% if user.user_type == 'contractor' %}
+                    <a href="{% url 'accounts:contractor_dashboard' %}" class="btn-outline">Cancel</a>
+                {% else %}
+                    <a href="{% url 'accounts:worker_dashboard' %}" class="btn-outline">Cancel</a>
+                {% endif %}
+                <button type="submit" class="btn-primary btn-save">Save Changes</button>
             </div>
         </form>
     </div>
-</body>
-</html>
+{% endblock content %}

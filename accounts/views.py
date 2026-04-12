@@ -1,16 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from .forms import UserRegistrationForm, ContractorProfileForm, WorkerProfileForm, JobPostForm, SubWorkerForm, JobApplicationForm, RatingForm
 from .models import User, ContractorProfile, WorkerProfile, SubWorker, JobPost, JobApplication, Notification, Rating
 from django.utils import timezone
-from datetime import datetime, timedelta
 import json
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
@@ -19,12 +17,22 @@ from django.db import models, IntegrityError
 from django.db.models import Avg
 
 def index(request):
+    if request.user.is_authenticated:
+        if request.user.user_type == 'contractor':
+            return redirect('accounts:contractor_dashboard')
+        else:
+            return redirect('accounts:worker_dashboard')
     if request.method == 'POST' and 'language' in request.POST:
         request.session['language'] = request.POST['language']
     language = request.session.get('language', 'en')
     return render(request, 'index.html', {'language': language})
 
 def sign_up(request):
+    if request.user.is_authenticated:
+        if request.user.user_type == 'contractor':
+            return redirect('accounts:contractor_dashboard')
+        else:
+            return redirect('accounts:worker_dashboard')
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -38,13 +46,18 @@ def sign_up(request):
         else:
             for field, errors in form.errors.items():
                 for error in errors:
-                    messages.error(request, f"{field}: {error}")
+                    messages.error(request, f"{error}")
     else:
         form = UserRegistrationForm()
     language = request.session.get('language', 'en')
     return render(request, 'sign_up.html', {'form': form, 'language': language})
 
 def log_in(request):
+    if request.user.is_authenticated:
+        if request.user.user_type == 'contractor':
+            return redirect('accounts:contractor_dashboard')
+        else:
+            return redirect('accounts:worker_dashboard')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -98,11 +111,26 @@ def contractor_dashboard(request):
     if request.user.user_type != 'contractor':
         return redirect('accounts:worker_dashboard')
     workers = WorkerProfile.objects.all()
-    jobs = JobPost.objects.filter(contractor=request.user)
+    today = timezone.now().date()
+    jobs = JobPost.objects.filter(contractor=request.user, end_date__gte=today)
     for worker in workers:
-        worker.average_rating = Rating.objects.filter(target_user=worker.user, rating_type='contractor_to_worker').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        worker_ratings = Rating.objects.filter(target_user=worker.user, rating_type='contractor_to_worker')
+        worker.average_rating = worker_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        worker.rating_count = worker_ratings.count()
+
+    for job in jobs:
+        job_ratings = Rating.objects.filter(target_job=job, rating_type='worker_to_job')
+        job.average_rating = job_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job.rating_count = job_ratings.count()
 
     job_applications = JobApplication.objects.filter(job__contractor=request.user).select_related('worker', 'job')
+    for application in job_applications:
+        application.has_rated = Rating.objects.filter(
+            reviewer=request.user,
+            target_user=application.worker,
+            target_job=application.job,
+            rating_type='contractor_to_worker'
+        ).exists()
     language = request.session.get('language', 'en')
     return render(request, 'accounts/contractor_dashboard.html', {
         'workers': workers,
@@ -126,13 +154,34 @@ def worker_dashboard(request):
         jobs = jobs.filter(location__icontains=city)
     
     for job in jobs:
-        job.average_rating = Rating.objects.filter(target_job=job, rating_type='worker_to_job').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
-        job.contractor_rating = Rating.objects.filter(target_user=job.contractor, rating_type='worker_to_contractor').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job_ratings = Rating.objects.filter(target_job=job, rating_type='worker_to_job')
+        job.average_rating = job_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job.rating_count = job_ratings.count()
+        
+        contractor_ratings = Rating.objects.filter(target_user=job.contractor, rating_type='worker_to_contractor')
+        job.contractor_rating = contractor_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job.contractor_rating_count = contractor_ratings.count()
+    
+    applied_job_ids = set(applications.values_list('job_id', flat=True))
+    
+    for application in applications:
+        application.has_rated_job = Rating.objects.filter(
+            reviewer=request.user,
+            target_job=application.job,
+            rating_type='worker_to_job'
+        ).exists()
+        application.has_rated_contractor = Rating.objects.filter(
+            reviewer=request.user,
+            target_user=application.job.contractor,
+            target_job=application.job,
+            rating_type='worker_to_contractor'
+        ).exists()
     
     language = request.session.get('language', 'en')
     return render(request, 'accounts/worker_dashboard.html', {
         'jobs': jobs,
         'applications': applications,
+        'applied_job_ids': applied_job_ids,
         'subworkers': subworkers,
         'user_profile': request.user,
         'profile': request.user.workerprofile,
@@ -152,13 +201,16 @@ def contractor_profile(request):
             messages.error(request, 'Error updating profile.')
     else:
         form = ContractorProfileForm(instance=profile)
-    average_rating = Rating.objects.filter(target_user=request.user, rating_type='worker_to_contractor').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    contractor_ratings = Rating.objects.filter(target_user=request.user, rating_type='worker_to_contractor')
+    average_rating = contractor_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    rating_count = contractor_ratings.count()
     language = request.session.get('language', 'en')
     return render(request, 'accounts/contractor_profile.html', {
         'form': form,
         'profile': profile,
         'user_profile': request.user,
         'average_rating': average_rating,
+        'rating_count': rating_count,
         'language': language
     })
 
@@ -167,11 +219,12 @@ def worker_profile(request):
     # Restrict access to workers only
     if request.user.user_type != 'worker':
         messages.error(request, 'Only workers can access this page.')
-        return redirect('accounts:worker_dashboard')
+        return redirect('accounts:contractor_dashboard')
 
     # Get or create the worker profile
     profile, created = WorkerProfile.objects.get_or_create(user=request.user, defaults={'city': request.user.city})
     subworkers = SubWorker.objects.filter(worker=request.user)  # Fetch subworkers for the table
+    subworker_form = SubWorkerForm()  # Initialize default form
 
     if request.method == 'POST':
         if 'add_subworker' in request.POST:
@@ -198,13 +251,11 @@ def worker_profile(request):
             profile.save()
             messages.success(request, 'Profile image updated successfully.')
             return redirect('accounts:worker_profile')
-    else:
-        subworker_form = SubWorkerForm()
 
     # Calculate average rating
-    average_rating = Rating.objects.filter(
-        target_user=request.user, rating_type='contractor_to_worker'
-    ).aggregate(Avg('rating_value'))['rating_value__avg'] or 0
+    worker_ratings = Rating.objects.filter(target_user=request.user, rating_type='contractor_to_worker')
+    average_rating = worker_ratings.aggregate(Avg('rating_value'))['rating_value__avg'] or 0
+    rating_count = worker_ratings.count()
 
     language = request.session.get('language', 'en')
     return render(request, 'accounts/worker_profile.html', {
@@ -212,6 +263,7 @@ def worker_profile(request):
         'profile': profile,
         'user_profile': request.user,
         'average_rating': average_rating,
+        'rating_count': rating_count,
         'subworkers': subworkers,  # Add subworkers to context
         'language': language,
     })
@@ -231,7 +283,7 @@ def edit_profile(request):
             request.user.contact_number = request.POST.get('contact_number')
             request.user.age = request.POST.get('age') or None
             request.user.gender = request.POST.get('gender')
-            request.user.skills_description = request.POST.get('skills_description')
+            request.user.skills_description = request.POST.get('skills_description', '')
             request.user.city = request.POST.get('city')
             profile.city = request.user.city
             
@@ -244,6 +296,7 @@ def edit_profile(request):
                     return redirect('accounts:edit_contractor_profile' if request.user.user_type == 'contractor' else 'accounts:edit_worker_profile')
                 if request.user.check_password(current_password):
                     request.user.set_password(new_password)
+                    update_session_auth_hash(request, request.user)  # Keep user logged in
                     messages.success(request, 'Password updated successfully.')
                 else:
                     messages.error(request, 'Current password is incorrect.')
@@ -266,7 +319,10 @@ def edit_profile(request):
     })
 @login_required
 def post_job(request):
-    if not request.user.city or not request.user.skills_description:
+    if request.user.user_type != 'contractor':
+        messages.error(request, 'Only contractors can post jobs.')
+        return redirect('accounts:worker_dashboard')
+    if not request.user.city or request.user.city == 'Not specified':
         messages.error(request, 'Please complete your profile before posting a job.')
         return redirect('accounts:edit_contractor_profile')
     
@@ -279,7 +335,9 @@ def post_job(request):
             messages.success(request, 'Job posted successfully.')
             return redirect('accounts:contractor_dashboard')
         else:
-            messages.error(request, 'Error posting job.')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
     else:
         form = JobPostForm()
     language = request.session.get('language', 'en')
@@ -289,7 +347,9 @@ def post_job(request):
 def my_jobs(request):
     jobs = JobPost.objects.filter(contractor=request.user)
     for job in jobs:
-        job.average_rating = Rating.objects.filter(target_job=job, rating_type='worker_to_job').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job_ratings = Rating.objects.filter(target_job=job, rating_type='worker_to_job')
+        job.average_rating = job_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+        job.rating_count = job_ratings.count()
     language = request.session.get('language', 'en')
     return render(request, 'accounts/my-jobs.html', {'jobs': jobs, 'today': timezone.now().date(), 'language': language})
 
@@ -301,9 +361,16 @@ def edit_job(request, job_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Job updated successfully.')
+            # Redirect back to the referring page
+            referer = request.META.get('HTTP_REFERER', '')
+            if 'contractor_dashboard' in referer:
+                return redirect('accounts:contractor_dashboard')
             return redirect('accounts:my_jobs')
         else:
             messages.error(request, 'Invalid form data.')
+            referer = request.META.get('HTTP_REFERER', '')
+            if 'contractor_dashboard' in referer:
+                return redirect('accounts:contractor_dashboard')
             return redirect('accounts:my_jobs')
     return HttpResponseBadRequest()
 
@@ -320,7 +387,9 @@ def delete_job(request, job_id):
 @login_required
 def get_job_details(request, job_id):
     job = get_object_or_404(JobPost, id=job_id)
-    average_rating = Rating.objects.filter(target_job=job, rating_type='worker_to_job').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    job_ratings = Rating.objects.filter(target_job=job, rating_type='worker_to_job')
+    average_rating = job_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    rating_count = job_ratings.count()
     data = {
         'title': job.title,
         'location': job.location,
@@ -332,20 +401,20 @@ def get_job_details(request, job_id):
         'start_date': job.start_date.isoformat(),
         'end_date': job.end_date.isoformat(),
         'contractor': job.contractor.full_name,
-        'average_rating': average_rating
+        'average_rating': average_rating,
+        'rating_count': rating_count,
+        'is_applied': JobApplication.objects.filter(job=job, worker=request.user).exists()
     }
     return JsonResponse(data)
 
 @login_required
 def submit_application(request, job_id):
-    if not request.user.city or not request.user.skills_description:
-        messages.error(request, 'Please complete your profile before applying.')
-        return redirect('accounts:worker_profile')
+    if not request.user.city or request.user.city == 'Not specified':
+        return JsonResponse({'status': 'error', 'message': 'Please complete your profile before applying.', 'redirect': reverse('accounts:edit_worker_profile')}, status=400)
     
     job = get_object_or_404(JobPost, id=job_id)
     if JobApplication.objects.filter(job=job, worker=request.user).exists():
-        messages.error(request, 'You have already applied for this job.')
-        return redirect('accounts:worker_dashboard')
+        return JsonResponse({'status': 'error', 'message': 'You have already applied for this job.'}, status=400)
     
     if request.method == 'POST':
         form = JobApplicationForm(request.POST)
@@ -444,71 +513,89 @@ def get_notifications(request):
 @login_required
 def worker_detail(request, worker_id):
     worker = get_object_or_404(WorkerProfile, id=worker_id)
-    average_rating = Rating.objects.filter(target_user=worker.user, rating_type='contractor_to_worker').aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    worker_ratings = Rating.objects.filter(target_user=worker.user, rating_type='contractor_to_worker')
+    average_rating = worker_ratings.aggregate(models.Avg('rating_value'))['rating_value__avg'] or 0
+    rating_count = worker_ratings.count()
     language = request.session.get('language', 'en')
-    return render(request, 'accounts/worker_detail.html', {'worker': worker, 'average_rating': average_rating, 'language': language})
+    return render(request, 'accounts/worker_detail.html', {'worker': worker, 'average_rating': average_rating, 'rating_count': rating_count, 'language': language})
 
 @login_required
-def rate_contractor(request, contractor_id):
+def rate_contractor(request, contractor_id, job_id):
     contractor = get_object_or_404(User, id=contractor_id, user_type='contractor')
+    job = get_object_or_404(JobPost, id=job_id, contractor=contractor)
+    
     if request.user.user_type != 'worker':
         messages.error(request, 'Only workers can rate contractors.')
         return redirect('accounts:worker_dashboard')
     
-    if not JobApplication.objects.filter(worker=request.user, job__contractor=contractor, status='accepted').exists():
+    if not JobApplication.objects.filter(worker=request.user, job=job, status='accepted').exists():
         messages.error(request, 'You can only rate contractors for jobs you were accepted for.')
         return redirect('accounts:worker_dashboard')
     
+    # Check if already rated for this job
+    if Rating.objects.filter(reviewer=request.user, target_job=job, rating_type='worker_to_contractor').exists():
+        messages.error(request, 'You have already rated this contractor for this job.')
+        return redirect('accounts:worker_dashboard')
+
     if request.method == 'POST':
         form = RatingForm(request.POST)
         if form.is_valid():
             rating = form.save(commit=False)
             rating.reviewer = request.user
             rating.target_user = contractor
+            rating.target_job = job
             rating.rating_type = 'worker_to_contractor'
             try:
                 rating.save()
                 messages.success(request, 'Rating submitted successfully.')
             except IntegrityError:
-                messages.error(request, 'You have already rated this contractor.')
+                messages.error(request, 'You have already rated this contractor for this job.')
             return redirect('accounts:worker_dashboard')
         else:
             messages.error(request, 'Error submitting rating.')
     else:
         form = RatingForm()
     language = request.session.get('language', 'en')
-    return render(request, 'accounts/rate_contractor.html', {'form': form, 'contractor': contractor, 'language': language})
+    return render(request, 'accounts/rate_contractor.html', {'form': form, 'contractor': contractor, 'job': job, 'language': language})
 
 @login_required
-def rate_worker(request, worker_id):
+def rate_worker(request, worker_id, job_id):
     worker = get_object_or_404(User, id=worker_id, user_type='worker')
+    job = get_object_or_404(JobPost, id=job_id, contractor=request.user)
+    
     if request.user.user_type != 'contractor':
         messages.error(request, 'Only contractors can rate workers.')
         return redirect('accounts:contractor_dashboard')
     
-    if not JobApplication.objects.filter(worker=worker, job__contractor=request.user, status='accepted').exists():
+    if not JobApplication.objects.filter(worker=worker, job=job, status='accepted').exists():
         messages.error(request, 'You can only rate workers for jobs you posted and accepted.')
         return redirect('accounts:contractor_dashboard')
     
+    # Check if already rated for this job
+    if Rating.objects.filter(reviewer=request.user, target_job=job, rating_type='contractor_to_worker').exists():
+        messages.error(request, 'You have already rated this worker for this job.')
+        return redirect('accounts:contractor_dashboard')
+
     if request.method == 'POST':
         form = RatingForm(request.POST)
         if form.is_valid():
             rating = form.save(commit=False)
             rating.reviewer = request.user
             rating.target_user = worker
+            rating.target_job = job
             rating.rating_type = 'contractor_to_worker'
             try:
                 rating.save()
                 messages.success(request, 'Rating submitted successfully.')
             except IntegrityError:
-                messages.error(request, 'You have already rated this worker.')
+                messages.error(request, 'You have already rated this worker for this job.')
             return redirect('accounts:contractor_dashboard')
         else:
             messages.error(request, 'Error submitting rating.')
     else:
         form = RatingForm()
     language = request.session.get('language', 'en')
-    return render(request, 'accounts/rate_worker.html', {'form': form, 'worker': worker, 'language': language})
+    return render(request, 'accounts/rate_worker.html', {'form': form, 'worker': worker, 'job': job, 'language': language})
 
 @login_required
 def rate_job(request, job_id):
@@ -521,6 +608,11 @@ def rate_job(request, job_id):
         messages.error(request, 'You can only rate jobs you were accepted for.')
         return redirect('accounts:worker_dashboard')
     
+    # Check if already rated
+    if Rating.objects.filter(reviewer=request.user, target_job=job, rating_type='worker_to_job').exists():
+        messages.error(request, 'You have already rated this job.')
+        return redirect('accounts:worker_dashboard')
+
     if request.method == 'POST':
         form = RatingForm(request.POST)
         if form.is_valid():

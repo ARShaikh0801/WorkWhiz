@@ -1,10 +1,42 @@
+# Python
 *.pyc
+*.pyo
 __pycache__/
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
 db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/profile_images/
+
+# Environment & Secrets
 .env
+
+# IDE / Editor
 .vscode/
-static/media/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Migrations (auto-generated)
 **/migrations/*.py
 !**/migrations/__init__.py
+
+# Logs
+*.log
+
+# One-off utility scripts
+replace_emojis.py

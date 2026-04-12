@@ -1,217 +1,652 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contractor Dashboard - WorkWhiz</title>
-    <link rel="stylesheet" href="{% static 'css/contractor_dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <style>
-        .container { max-width: 1200px; margin: 50px auto; padding: 20px; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .worker-card { cursor: pointer; }
-        .worker-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
-        .profile-pic img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
-        .rating { color: green; font-size: 16px; }
-        .job-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .job-table th, .job-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
-        .job-table th { background-color: #f4f7fb; font-weight: bold; }
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
-        .status-badge.active { background-color: #e7f9e7; color: #4CAF50; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 18px; margin-right: 10px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; }
-        .modal-content { background-color: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 700px; border-radius: 12px; }
-        .close { cursor: pointer; float: right; font-size: 20px; }
-        .application-actions { display: flex; gap: 10px; }
-        .post-job-btn { background-color: #1e90ff; color: white; padding: 12px 30px; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
-        .post-job-btn:hover { background-color: #0066cc; }
-        .post-job-wrapper { margin-bottom: 40px; }
-        td, th { text-align: center; }
-        .tabs { display: flex; gap: 15px; margin-bottom: 20px; }
-        .tab-link { padding: 10px 20px; background-color: #f4f7fb; border-radius: 20px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
-        .tab-link.active { background-color: #1e90ff; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .job-table { display: block; overflow-x: auto; } .tabs { flex-wrap: wrap; gap: 10px; } }
-    </style>
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    {% include 'partials/_navbar_contractor.html' %}
 
-    <div class="container">
-        <h1>Welcome, {{ user_profile.full_name }}</h1><br>
-        <div class="post-job-wrapper">
-            <a href="{% url 'accounts:post_job' %}" class="post-job-btn">Post a New Job</a>
-        </div>
-        <div class="tabs">
-            <div class="tab-link active" data-tab="overview">Overview</div>
-            <div class="tab-link" data-tab="job-applications">Job Applications</div>
-        </div>
-        <div id="overview" class="tab-content active">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <h2>Available Workers</h2>
-                    {% for worker in workers %}
-                        <div class="worker-card" onclick="viewWorker('{{ worker.id }}')">
-                            <div class="profile-pic">
-                                {% if worker.profile_image %}
-                                    <img src="{{ worker.profile_image.url }}" alt="{{ worker.user.full_name }}">
-                                {% else %}
-                                    <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile">
-                                {% endif %}
-                            </div>
-                            <div>
-                                <h3>{{ worker.user.full_name }}</h3>
-                                <p>{{ worker.user.city }}</p>
-                                <p>{{ worker.user.skills_description|truncatewords:10 }}</p>
-                                <div class="rating">Rating: {{ worker.average_rating|floatformat:1 }} / 5</div>
-                            </div>
+{% block title %}Contractor Dashboard - WorkWhiz{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 1.5rem;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .card h2 {
+        font-size: var(--text-xl);
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.75rem;
+    }
+
+    .worker-card {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem;
+        background: var(--bg);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all var(--transition);
+        border: 1px solid var(--border);
+    }
+
+    .worker-card:hover {
+        transform: translateY(-3px);
+        background: white;
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+    }
+
+    .worker-card .profile-pic {
+        width: 65px;
+        height: 65px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        border-width: 2px;
+    }
+
+    .worker-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .worker-info h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: var(--text-md);
+        color: var(--text);
+    }
+
+    .worker-info p {
+        margin: 0;
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+        line-height: 1.5;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .rating {
+        color: #f59e0b;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .star-rating {
+        display: inline-block;
+        --percent: calc(var(--rating) / 5 * 100%);
+        font-size: 1.15rem;
+        font-family: Arial, sans-serif;
+        line-height: 1;
+        letter-spacing: 2px;
+    }
+    .star-rating::before {
+        content: '★★★★★';
+        background: linear-gradient(90deg, #fbbf24 var(--percent), #d1d5db var(--percent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 1px rgba(0,0,0,0.1);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-link {
+        padding: 0.75rem 1.5rem;
+        background: var(--bg);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all var(--transition);
+        white-space: nowrap;
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+    }
+
+    .tab-link.active {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .status-badge {
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+
+    .status-badge.active {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .post-job-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .worker-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem 1.25rem;
+        }
+    }
+
+    .modal.dashboard-modal {
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .dashboard-modal .modal-content {
+        max-height: calc(100vh - 2rem);
+        margin: 0;
+        /* remove any auto margin fighting the flex centering */
+    }
+
+    .dashboard-modal .modal-body {
+        overflow-y: auto;
+    }
+    .dashboard-modal .modal-content {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.dashboard-modal .modal-body {
+    overflow-x: hidden;
+}
+
+.dashboard-modal .job-details-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.dashboard-modal .job-description-text {
+    word-break: break-word;
+}
+
+html.modal-open,
+html.modal-open body {
+    overflow: hidden !important;
+}
+
+/* ===== Modal Fix — Contractor Dashboard Only ===== */
+.modal.dashboard-modal {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.dashboard-modal .modal-content {
+    max-width: calc(100vw - 2rem);
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.dashboard-modal .modal-body {
+    overflow-x: hidden;
+    overflow-y: visible;
+    box-sizing: border-box;
+}
+
+.dashboard-modal .job-details-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.dashboard-modal .job-description-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ user_profile.full_name }}</h1>
+        <a href="{% url 'accounts:post_job' %}" class="btn-primary post-job-btn">Post a New Job</a>
+    </div>
+    {% if messages %}
+    <div class="messages" style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="tabs">
+        <div class="tab-link active" data-tab="overview">Overview</div>
+        <div class="tab-link" data-tab="job-applications">Job Applications</div>
+    </div>
+    <div id="overview" class="tab-content active">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Available Workers</h2>
+                {% for worker in workers %}
+                <div class="worker-card" onclick="viewWorker('{{ worker.id }}')">
+                    {% if worker.profile_image %}
+                    <img src="{{ worker.profile_image.url }}" alt="{{ worker.user.full_name }}" class="profile-pic">
+                    {% else %}
+                    <img src="{% static 'images/default-profile.jpeg' %}" alt="Default Profile" class="profile-pic">
+                    {% endif %}
+                    <div class="worker-info">
+                        <h3>{{ worker.user.full_name }}</h3>
+                        <p><svg xmlns="http://www.w3.org/2000/svg"
+                                style="width: 1em; height: 1em; vertical-align: middle; margin-right: 4px;" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                            </svg>{{ worker.user.city }}</p>
+                        <p>{{ worker.user.skills_description|truncatewords:10 }}</p>
+                        <div class="rating" style="display:flex; align-items:center; gap:0.5rem;">
+                            <span class="star-rating" style="--rating: {{ worker.average_rating|default:'0' }};" title="{{ worker.average_rating|floatformat:1 }} out of 5"></span>
+                            <span style="color: var(--text-muted); font-weight: 400; font-size: 0.85rem;">({{worker.rating_count }} reviews)</span>
                         </div>
-                    {% empty %}
-                        <p>No workers available.</p>
-                    {% endfor %}
+                    </div>
                 </div>
-                <div class="card">
-                    <h2>My Jobs</h2>
+                {% empty %}
+                <p>No workers available.</p>
+                {% endfor %}
+            </div>
+            <div class="card">
+                <h2>Active Jobs</h2>
+                <div class="table-container">
                     <table class="job-table">
                         <thead>
                             <tr>
                                 <th>Title</th>
-                                <th>Status</th>
                                 <th>Rating</th>
-                                <th>Applications</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for job in jobs %}
-                                <tr>
-                                    <td>{{ job.title }}</td>
-                                    <td>
-                                        <span class="status-badge {% if job.end_date > today %}active{% endif %}">
-                                            {% if job.end_date > today %}Active{% else %}Completed{% endif %}
-                                        </span>
-                                    </td>
-                                    <td class="rating">★★★★★ {{ job.average_rating|floatformat:1 }}/5</td>
-                                    <td>
-                                        <button class="action-btn" onclick="showTab('job-applications')">👥</button>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td onclick="viewJob('{{ job.id }}')" style="cursor: pointer;">
+                                    <strong style="color: var(--primary);">{{ job.title }}</strong>
+                                </td>
+                                <td>
+                                    <div class="rating"
+                                        style="margin: 0; display: inline-flex; align-items: center; gap: 4px;">
+                                        <span class="star-rating" style="--rating: {{ job.average_rating|default:'0' }};" title="{{ job.average_rating|floatformat:1 }} out of 5"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 4px; justify-content: center;">
+                                        <button class="action-btn" onclick="editJob('{{ job.id }}')" title="Edit Job">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.3em; height: 1.3em;"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                            </svg>
+                                        </button>
+                                        <button class="action-btn" onclick="showTab('job-applications')"
+                                            title="View Applications">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5em; height: 1.5em;"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                             {% empty %}
-                                <tr><td colspan="4">No jobs posted.</td></tr>
+                            <tr>
+                                <td colspan="3">No active jobs. <a href="{% url 'accounts:post_job' %}"
+                                        style="color: var(--primary); font-weight: 600;">Post a new job</a> to get
+                                    started!</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div id="job-applications" class="tab-content">
-            <h2>Job Applications</h2>
-            {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="message {{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+    </div>
+    <div id="job-applications" class="tab-content">
+        <div class="table-container">
             <table class="job-table">
                 <thead>
                     <tr>
-                        <th>Worker Name</th>
-                        <th>Job Title</th>
-                        <th>Application Date</th>
+                        <th>Worker</th>
+                        <th>Job</th>
+                        <th>Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for application in job_applications %}
-                        <tr>
-                            <td>{{ application.worker.full_name }}</td>
-                            <td>{{ application.job.title }}</td>
-                            <td>{{ application.applied_date|date:"Y-m-d" }}</td>
-                            <td>{{ application.status|capfirst }}</td>
-                            <td>
-                                {% if application.status == 'pending' %}
-                                    <form class="action-form accept-form" data-url="{% url 'accounts:accept_application' application.id %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="action-btn" style="color: #4CAF50; ">✔</button>
-                                    </form>
-                                    <form class="action-form reject-form" data-url="{% url 'accounts:reject_application' application.id %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="action-btn" style="color: #f44336;">✖</button>
-                                    </form>
-                                {% else %}
-                                    <span>{{ application.status|capfirst }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td><strong>{{ application.worker.full_name }}</strong></td>
+                        <td>{{ application.job.title }}</td>
+                        <td>{{ application.applied_date|date:"Y-m-d" }}</td>
+                        <td>
+                            <span class="status-badge {{ application.status }}">
+                                {{ application.status|upper }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if application.status == 'pending' %}
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <form class="action-form accept-form"
+                                    data-url="{% url 'accounts:accept_application' application.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn" style="color: #10b981;" title="Accept"><svg
+                                            xmlns="http://www.w3.org/2000/svg" style="width: 1.5em; height: 1.5em;"
+                                            fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m4.5 12.75 6 6 9-13.5" />
+                                        </svg></button>
+                                </form>
+                                <form class="action-form reject-form"
+                                    data-url="{% url 'accounts:reject_application' application.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn" style="color: #ef4444;" title="Reject"><svg
+                                            xmlns="http://www.w3.org/2000/svg" style="width: 1.5em; height: 1.5em;"
+                                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg></button>
+                                </form>
+                            </div>
+                            {% elif application.status == 'accepted' %}
+                            {% if application.has_rated %}
+                            <span class="rated-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 1rem; height: 1rem;" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Rated
+                            </span>
+                            {% else %}
+                            <a href="{% url 'accounts:rate_worker' application.worker.id application.job.id %}"
+                                class="rate-btn" title="Rate Worker">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.1rem; height: 1.1rem;"
+                                    viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Rate Worker
+                            </a>
+                            {% endif %}
+                            {% elif application.status == 'rejected' %}
+                            <span style="color: var(--text-muted); font-size: var(--text-xs);">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% empty %}
-                        <tr><td colspan="5">No job applications found.</td></tr>
+                    <tr>
+                        <td colspan="5">No job applications found.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    <div id="jobModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">×</span>
+</div>
+</div>
+{% endblock content %}
+
+{% block bottom_strip %}
+<!-- Job Details Modal -->
+<div id="jobModal" class="modal dashboard-modal">
+    <div class="modal-content">
+        <div class="modal-header">
             <h2>Job Details</h2>
+            <span class="close" onclick="closeModal()"><svg xmlns="http://www.w3.org/2000/svg"
+                    style="width: 1.5rem; height: 1.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg></span>
+        </div>
+        <div class="modal-body">
             <div id="jobDetails"></div>
         </div>
     </div>
-    <script>
-        function viewWorker(workerId) {
-            window.location.href = `{% url 'accounts:worker_detail' 0 %}`.replace('0', workerId);
-        }
+</div>
 
-        function viewJob(jobId) {
-            fetch(`{% url 'accounts:get_job_details' 0 %}`.replace('0', jobId))
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('jobDetails').innerHTML = `
-                        <p><strong>Title:</strong> ${data.title}</p>
-                        <p><strong>Location:</strong> ${data.location}</p>
-                        <p><strong>Description:</strong> ${data.description}</p>
-                        <p><strong>Requirements:</strong> ${data.requirements}</p>
-                        <p><strong>Eligibility:</strong> ${data.eligibility}</p>
-                        <p><strong>Worker Count:</strong> ${data.worker_count}</p>
-                        <p><strong>Duration:</strong> ${data.duration}</p>
-                        <p><strong>Start Date:</strong> ${data.start_date}</p>
-                        <p><strong>End Date:</strong> ${data.end_date}</p>
-                        <p><strong>Rating:</strong> ${data.average_rating.toFixed(1)} / 5</p>
+<!-- Edit Job Modal -->
+<div id="editJobModal" class="modal dashboard-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Job Details</h2>
+            <span class="close" onclick="closeEditModal()"><svg xmlns="http://www.w3.org/2000/svg"
+                    style="width: 1.5rem; height: 1.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg></span>
+        </div>
+        <div class="modal-body">
+            <form id="editJobForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="edit_title">Job Title</label>
+                    <input type="text" id="edit_title" name="title" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_location">Location</label>
+                        <input type="text" id="edit_location" name="location" required>
+                    </div>
+                    <div class="form-group" style="max-width: 120px;">
+                        <label for="edit_worker_count">Workers</label>
+                        <input type="number" id="edit_worker_count" name="worker_count" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit_description">Job Description</label>
+                    <textarea id="edit_description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_start_date">Start Date</label>
+                        <input type="date" id="edit_start_date" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_end_date">End Date</label>
+                        <input type="date" id="edit_end_date" name="end_date" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="edit_duration">Duration</label>
+                    <input type="text" id="edit_duration" name="duration" placeholder="e.g. 2 weeks" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock bottom_strip %}
+
+{% block scripts %}
+<script>
+    function viewWorker(workerId) {
+        window.location.href = `{% url 'accounts:worker_detail' 0 %}`.replace('0', workerId);
+    }
+
+    function viewJob(jobId) {
+        fetch(`{% url 'accounts:get_job_details' 0 %}`.replace('0', jobId))
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('jobDetails').innerHTML = `
+                        <div class="job-main-info">
+                            <div class="job-title-large">${data.title}</div>
+                            <div class="job-meta-flex">
+                                <div class="job-meta-item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                                    <span>${data.location}</span>
+                                </div>
+                            </div>
+                            <div class="job-description-text">${data.description}</div>
+                        </div>
+
+                        <div class="job-details-grid">
+                            <div class="detail-card">
+                                <div class="detail-card-label">Requirements</div>
+                                <div class="detail-card-value">${data.requirements}</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-card-label">Eligibility</div>
+                                <div class="detail-card-value">${data.eligibility}</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-card-label">Duration</div>
+                                <div class="detail-card-value">${data.duration}</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-card-label">Workers Needed</div>
+                                <div class="detail-card-value">${data.worker_count}</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-card-label">Start Date</div>
+                                <div class="detail-card-value">${data.start_date}</div>
+                            </div>
+                            <div class="detail-card">
+                                <div class="detail-card-label">End Date</div>
+                                <div class="detail-card-value">${data.end_date}</div>
+                            </div>
+                        </div>
+
+                        <div class="rating-footer" style="display:flex; align-items:center; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem;">
+                            <span style="font-weight:600; color:var(--text);">Rating:</span>
+                            <span class="star-rating" style="--rating: ${data.average_rating.toFixed(1)};"></span>
+                        </div>
                     `;
-                    document.getElementById('jobModal').style.display = 'block';
-                });
-        }
-
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+                const m = document.getElementById('jobModal');
+                m.style.display = 'flex';
+                document.documentElement.classList.add('modal-open');
             });
-            document.querySelectorAll('.tab-link').forEach(tab => {
-                tab.classList.remove('active');
+    }
+
+    function editJob(jobId) {
+        fetch(`{% url 'accounts:get_job_details' 0 %}`.replace('0', jobId))
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit_title').value = data.title;
+                document.getElementById('edit_location').value = data.location;
+                document.getElementById('edit_description').value = data.description;
+                document.getElementById('edit_worker_count').value = data.worker_count;
+                document.getElementById('edit_duration').value = data.duration;
+                document.getElementById('edit_start_date').value = data.start_date;
+                document.getElementById('edit_end_date').value = data.end_date;
+                document.getElementById('editJobForm').action = "{% url 'accounts:edit_job' 0 %}".replace('0', jobId);
+                const em = document.getElementById('editJobModal');
+                em.style.display = 'flex';
+                document.documentElement.classList.add('modal-open');
             });
-            document.getElementById(tabId).classList.add('active');
-            document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active');
-        }
+    }
 
-        function closeModal() {
-            document.getElementById('jobModal').style.display = 'none';
-        }
+    function closeEditModal() {
+        document.getElementById('editJobModal').style.display = 'none';
+        document.documentElement.classList.remove('modal-open');
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.action-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const url = this.getAttribute('data-url');
-                    fetch(url, {
-                        method: 'POST',
-                        body: new FormData(this),
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-link').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('jobModal').style.display = 'none';
+        document.documentElement.classList.remove('modal-open');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.action-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                fetch(url, {
+                    method: 'POST',
+                    body: new FormData(this),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
@@ -224,15 +659,27 @@
                         console.error('Error:', error);
                         alert('An error occurred while processing the request.');
                     });
-                });
-            });
-
-            document.querySelectorAll('.tab-link').forEach(link => {
-                link.addEventListener('click', function() {
-                    showTab(this.getAttribute('data-tab'));
-                });
             });
         });
-    </script>
-</body>
-</html>
+
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.addEventListener('click', function () {
+                showTab(this.getAttribute('data-tab'));
+            });
+        });
+
+        // Close modals on escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeEditModal();
+            }
+        });
+
+        // Close modals on click outside
+        window.addEventListener('click', (e) => {
+            if (e.target.id === 'editJobModal') closeEditModal();
+        });
+    });
+</script>
+{% endblock scripts %}

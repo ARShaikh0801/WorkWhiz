@@ -1,41 +1,153 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services - WorkWhiz</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style-services.css' %}">
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    {% include 'partials/_navbar_public.html' %}
 
-    <div class="content-section">
-        <div class="service-title">
-            <h1>Our Services</h1>
-            <p>Explore how WorkWhiz can help you connect with workers or find job opportunities.</p>
+{% block title %}Our Services — WorkWhiz{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .services-container {
+            max-width: 1200px;
+            margin: 30px auto 60px auto;
+            padding: 0 1.5rem 1rem 1.5rem;
+            text-align: center;
+        }
+
+        .services-header {
+            margin-bottom: 3.3rem;
+        }
+
+        .services-header h1 {
+            font-size: var(--text-4xl);
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .services-header p {
+            font-size: var(--text-lg);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            text-align: left;
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .service-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background: var(--bg);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            box-shadow: 0 0 0 1px var(--border);
+        }
+
+        .service-icon-wrapper svg {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .service-card h2 {
+            font-size: var(--text-xl);
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .service-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .service-list li {
+            position: relative;
+            padding-left: 1.75rem;
+            margin-bottom: 1rem;
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .service-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        @media (max-width: 640px) {
+            .services-header h1 { font-size: var(--text-3xl); }
+            .services-grid { grid-template-columns: 1fr; }
+            .service-card { padding: 2rem; }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="services-container">
+        <div class="services-header">
+            <h1>What We Offer</h1>
+            <p>Powerful tools to connect the right people with the right opportunities</p>
         </div>
-        <div class="service-box">
-            <h2>For Contractors</h2>
-            <ul>
-                <li>Post job listings to find skilled workers.</li>
-                <li>Manage applications and hire teams.</li>
-                <li>Track project progress with ease.</li>
-            </ul>
-        </div>
-        <div class="service-box">
-            <h2>For Workers</h2>
-            <ul>
-                <li>Browse and apply for jobs that match your skills.</li>
-                <li>Build a profile to showcase your expertise.</li>
-                <li>Join teams for collaborative projects.</li>
-            </ul>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                </div>
+                <h2>For Contractors</h2>
+                <ul class="service-list">
+                    <li>Post detailed job listings and reach hundreds of skilled workers instantly</li>
+                    <li>Review applications, compare profiles, and hire the best-fit candidates</li>
+                    <li>Rate workers and build long-term professional relationships</li>
+                    <li>Manage multiple projects with an intuitive, real-time dashboard</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </div>
+                <h2>For Workers</h2>
+                <ul class="service-list">
+                    <li>Browse and apply for jobs that match your skills, location, and availability</li>
+                    <li>Build a professional profile to showcase your expertise and experience</li>
+                    <li>Add team members and apply as a group for larger projects</li>
+                    <li>Rate contractors and jobs to ensure quality across the platform</li>
+                </ul>
+            </div>
         </div>
     </div>
-    <footer>
-        <p>&copy; 2025 WorkWhiz. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+{% endblock content %}

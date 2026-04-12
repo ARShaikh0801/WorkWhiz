@@ -1,16 +1,18 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - WorkWhiz</title>
+
+{% block title %}Sign Up — WorkWhiz{% endblock %}
+
+{% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/style-signup.css' %}">
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    <div class="signup-container">
-        <h1>Sign Up</h1>
+{% endblock %}
+
+{% block content %}
+<div class="signup-wrapper">
+    <div class="form-card signup-container">
+        <h1>Create Your Account</h1>
+        <p class="form-subtitle">Join thousands of workers and contractors on WorkWhiz</p>
+
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
@@ -18,25 +20,184 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <form method="POST">
+
+        <form method="POST" novalidate>
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <div class="form-group">
+                <label for="id_user_type">I am a</label>
+                <select id="id_user_type" name="user_type" required>
+                    <option value="" disabled {% if not form.user_type.value %}selected{% endif %}>Select your role…</option>
+                    <option value="worker" {% if form.user_type.value == 'worker' %}selected{% endif %}>Worker</option>
+                    <option value="contractor" {% if form.user_type.value == 'contractor' %}selected{% endif %}>Contractor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_full_name">Full Name</label>
+                <input type="text" id="id_full_name" name="full_name" placeholder="Enter your full name" value="{{ form.full_name.value|default:'' }}" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_email">Email Address</label>
+                    <input type="email" id="id_email" name="email" placeholder="you@example.com" value="{{ form.email.value|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_contact_number">Phone Number</label>
+                    <input type="text" id="id_contact_number" name="contact_number" placeholder="+91XXXXXXXXXX" value="{{ form.contact_number.value|default:'' }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_age">Age</label>
+                    <input type="number" id="id_age" name="age" placeholder="e.g. 25" min="18" max="100" value="{{ form.age.value|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label for="id_gender">Gender</label>
+                    <select id="id_gender" name="gender">
+                        <option value="not added" {% if form.gender.value == 'not added' or not form.gender.value %}selected{% endif %}>Prefer not to say</option>
+                        <option value="Male" {% if form.gender.value == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if form.gender.value == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if form.gender.value == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_city">City</label>
+                <input type="text" id="id_city" name="city" placeholder="e.g. Mumbai" value="{{ form.city.value|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" id="id_username" name="username" placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="id_password1" name="password1" placeholder="Create a password" required autocomplete="new-password">
+                    <button type="button" class="toggle-pw" onclick="togglePassword('id_password1', this)" aria-label="Show password"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg></button>
+                </div>
+
+                <!-- Live password requirements checklist -->
+                <ul class="pw-checklist" id="pw-checklist">
+                    <li id="pw-length"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> At least 6 characters</li>
+                    <li id="pw-upper"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> One uppercase letter</li>
+                    <li id="pw-lower"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> One lowercase letter</li>
+                    <li id="pw-number"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> One number</li>
+                    <li id="pw-not-alphabets"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> Not entirely alphabets</li>
+                    <li id="pw-not-numeric"><span class="pw-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg></span> Not entirely numbers</li>
+                </ul>
+                <div class="pw-strength-bar">
+                    <div class="pw-strength-fill" id="pw-strength-fill"></div>
+                </div>
+                <span class="pw-strength-text" id="pw-strength-text"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="id_password2" name="password2" placeholder="Re-enter password" required autocomplete="new-password">
+                    <button type="button" class="toggle-pw" onclick="togglePassword('id_password2', this)" aria-label="Show password"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg></button>
+                </div>
+                <span class="pw-match-status" id="pw-match-status"></span>
+            </div>
+
             <div class="form-buttons">
-                <button type="submit">Sign Up</button>
-                <a href="{% url 'accounts:log_in' %}">Already have an account? Login</a>
+                <button type="submit" class="btn-primary">Create Account</button>
+                <a href="{% url 'accounts:log_in' %}" class="btn-secondary">Already have an account? <strong>Sign in</strong></a>
             </div>
         </form>
     </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
     <script>
-        const togglePassword = document.querySelector('.toggle-password');
-        const passwordInput = document.querySelector('#password');
-        if (togglePassword && passwordInput) {
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.textContent = type === 'password' ? '👁️' : '🙈';
-            });
+        // Toggle password visibility
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+            }
+        }
+
+        const pw1 = document.getElementById('id_password1');
+        const pw2 = document.getElementById('id_password2');
+        const strengthFill = document.getElementById('pw-strength-fill');
+        const strengthText = document.getElementById('pw-strength-text');
+        const matchStatus = document.getElementById('pw-match-status');
+
+        const checks = {
+            'pw-length':      pw => pw.length >= 6,
+            'pw-upper':       pw => /[A-Z]/.test(pw),
+            'pw-lower':       pw => /[a-z]/.test(pw),
+            'pw-number':      pw => /\d/.test(pw),
+            'pw-not-alphabets': pw => pw.length > 0 && !/^[a-zA-Z]+$/.test(pw),
+            'pw-not-numeric': pw => pw.length > 0 && !/^\d+$/.test(pw),
+        };
+
+        pw1.addEventListener('input', function () {
+            const pw = this.value;
+            let score = 0;
+
+            for (const [id, fn] of Object.entries(checks)) {
+                const el = document.getElementById(id);
+                const passed = fn(pw);
+                el.classList.toggle('pass', passed);
+                el.querySelector('.pw-icon').innerHTML = passed ? '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-linecap="round" stroke-linejoin="round" /></svg>';
+                if (passed) score++;
+            }
+
+            const pct = pw.length === 0 ? 0 : Math.round((score / 6) * 100);
+            strengthFill.style.width = pct + '%';
+
+            if (pw.length === 0) {
+                strengthFill.style.background = '#e2e8f0';
+                strengthText.textContent = '';
+                strengthText.style.color = '';
+            } else if (pct <= 33) {
+                strengthFill.style.background = '#dc2626';
+                strengthText.textContent = 'Weak';
+                strengthText.style.color = '#dc2626';
+            } else if (pct <= 66) {
+                strengthFill.style.background = '#f59e0b';
+                strengthText.textContent = 'Fair';
+                strengthText.style.color = '#f59e0b';
+            } else if (pct < 100) {
+                strengthFill.style.background = '#3b82f6';
+                strengthText.textContent = 'Good';
+                strengthText.style.color = '#3b82f6';
+            } else {
+                strengthFill.style.background = '#16a34a';
+                strengthText.innerHTML = 'Strong <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09l2.846.813-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 15.904L18 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L11.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L18 5.25l.813 2.846a4.5 4.5 0 003.09 3.09l2.846.813-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>';
+                strengthText.style.color = '#16a34a';
+            }
+
+            if (pw2.value.length > 0) checkMatch();
+        });
+
+        pw2.addEventListener('input', checkMatch);
+
+        function checkMatch() {
+            const p1 = pw1.value;
+            const p2 = pw2.value;
+            if (p2.length === 0) {
+                matchStatus.textContent = '';
+            } else if (p1 === p2) {
+                matchStatus.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Passwords match';
+                matchStatus.style.color = '#16a34a';
+            } else {
+                matchStatus.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg> Passwords do not match';
+                matchStatus.style.color = '#dc2626';
+            }
         }
     </script>
-</body>
-</html>
+{% endblock %}

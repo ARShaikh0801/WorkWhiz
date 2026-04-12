@@ -136,22 +136,18 @@ class Rating(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_ratings')
     target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_ratings', null=True, blank=True)
-    target_job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='ratings', null=True, blank=True)
+    target_job = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='ratings')
     
     class Meta:
-        # Single unique_together constraint that includes all relevant fields
-        unique_together = [['reviewer', 'target_user', 'target_job', 'rating_type']]
+        # One rating per reviewer per job per type
+        unique_together = [['reviewer', 'target_job', 'rating_type']]
     
     def clean(self):
-        # Validation to ensure correct usage of target_user and target_job
+        # Validation to ensure correct usage of target_user
         if self.rating_type in ('worker_to_contractor', 'contractor_to_worker'):
             if not self.target_user:
                 raise ValidationError("target_user must be set for worker_to_contractor or contractor_to_worker ratings.")
-            if self.target_job:
-                raise ValidationError("target_job must be null for worker_to_contractor or contractor_to_worker ratings.")
         elif self.rating_type == 'worker_to_job':
-            if not self.target_job:
-                raise ValidationError("target_job must be set for worker_to_job ratings.")
             if self.target_user:
                 raise ValidationError("target_user must be null for worker_to_job ratings.")
     

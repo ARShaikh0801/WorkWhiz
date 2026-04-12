@@ -1,0 +1,49 @@
+{% load static %}
+<div class="top-strip">
+    <div class="nav-left">
+        <a href="{% url 'accounts:index' %}">
+            <img src="{% static 'images/logo.png' %}" alt="WorkWhiz Logo" class="logo">
+        </a>
+    </div>
+    
+    <!-- Hamburger Menu Toggle (Mobile Only) -->
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span class="hamburger"></span>
+    </button>
+
+    <div class="nav-right">
+        {% if user.is_authenticated %}
+            {% if user.user_type == 'contractor' %}
+                <a href="{% url 'accounts:contractor_dashboard' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:contractor_dashboard' %}active-nav-tab{% endif %}">Dashboard</a>
+                <a href="{% url 'accounts:contractor_profile' %}" class="nav-item {% if 'contractor_profile' in request.resolver_match.view_name or 'edit_contractor_profile' in request.resolver_match.view_name %}active-nav-tab{% endif %}">Profile</a>
+                <a href="{% url 'accounts:my_jobs' %}" class="nav-item {% if 'my_jobs' in request.resolver_match.view_name or 'edit_job' in request.resolver_match.view_name %}active-nav-tab{% endif %}">My Jobs</a>
+            {% elif user.user_type == 'worker' %}
+                <a href="{% url 'accounts:worker_dashboard' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:worker_dashboard' %}active-nav-tab{% endif %}">Dashboard</a>
+                <a href="{% url 'accounts:worker_profile' %}" class="nav-item {% if 'worker_profile' in request.resolver_match.view_name or 'edit_worker_profile' in request.resolver_match.view_name %}active-nav-tab{% endif %}">Profile</a>
+            {% endif %}
+            <a href="{% url 'accounts:log_out' %}" class="nav-item logout-btn">Logout</a>
+        {% else %}
+            <a href="{% url 'accounts:index' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:index' %}active-nav-tab{% endif %}">Home</a>
+            <a href="{% url 'accounts:about_us' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:about_us' %}active-nav-tab{% endif %}">About Us</a>
+            <a href="{% url 'accounts:services' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:services' %}active-nav-tab{% endif %}">Services</a>
+            <a href="{% url 'accounts:help_center' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:help_center' %}active-nav-tab{% endif %}">Help Center</a>
+            <a href="{% url 'accounts:log_in' %}" class="nav-item {% if request.resolver_match.view_name == 'accounts:log_in' %}active-nav-tab{% endif %}">Log In</a>
+            <a href="{% url 'accounts:sign_up' %}" class="nav-item signup-btn">Sign Up</a>
+        {% endif %}
+        <div id="google_translate_element"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.querySelector('.mobile-nav-toggle');
+        const navRight = document.querySelector('.nav-right');
+        
+        if (toggle) {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navRight.classList.toggle('active');
+            });
+        }
+    });
+</script>

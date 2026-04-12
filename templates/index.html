@@ -1,39 +1,41 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="{{ language|default:'en' }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkWhiz - Home</title>
+{% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% include 'partials/_google_translate.html' %}
-</head>
-<body>
-    {% include 'partials/_navbar_public.html' %}
+{% endblock %}
 
+{% block content %}
     <div class="background-img">
         <div class="animated-quote">
             <span class="word">Connecting</span>
             <span class="word">Workers</span>
-            <span class="word">and</span>
+            <span class="word">&</span>
             <span class="word">Contractors</span>
             <span class="word">Seamlessly</span>
         </div>
+        <p class="hero-subtitle">Your trusted platform for finding skilled laborers and reliable job opportunities — fast, simple, and hassle-free.</p>
         <div class="button-container">
-            <a href="{% url 'accounts:sign_up' %}" class="action-button">Sign Up</a>
-            <a href="{% url 'accounts:log_in' %}" class="action-button">Log In</a>
+            <a href="{% url 'accounts:sign_up' %}" class="action-button">Get Started</a>
+            <a href="{% url 'accounts:log_in' %}" class="action-button">Sign In</a>
         </div>
     </div>
 
     <div class="description-section">
         <div class="column">
-            <p><strong>WorkWhiz is a platform that bridges the gap between skilled laborers and contractors. Workers can sign up and showcase their experience and skills. The platform empowers workers to present themselves professionally, increasing their chances of getting hired quickly.</strong></p>
+            <span class="column-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg></span>
+            <h3>For Workers</h3>
+            <p>Create your professional profile and showcase your skills to top contractors. Get discovered, apply for jobs that match your expertise, and start earning faster than ever.</p>
         </div>
         <div class="column">
-            <p><strong>Contractors can find verified workers by filtering through criteria like skills, age, and location to get the job done right and fast. With a user-friendly interface and real-time listings, hiring becomes efficient, reliable, and hassle-free.</strong></p>
+            <span class="column-icon"><svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25em; height: 1.25em; vertical-align: text-bottom; display: inline-block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-2.25A2.25 2.25 0 0111.25 16.5h1.5a2.25 2.25 0 012.25 2.25V21" /></svg></span>
+            <h3>For Contractors</h3>
+            <p>Find verified, skilled workers by filtering through experience, location, and availability. Post jobs, manage applications, and build your dream team — all in one place.</p>
         </div>
     </div>
 
+{% endblock content %}
+
+{% block bottom_strip %}
     <div class="bottom-strip">
         <div class="animated-thankyou">
             <span class="word">Thank</span>
@@ -42,10 +44,9 @@
             <span class="word">Visiting</span>
             <span class="word">WorkWhiz</span>
         </div>
-        <a href="{% url 'accounts:about_us' %}" class="about-link">About Us</a>
+        <a href="{% url 'accounts:about_us' %}" class="about-link">Meet Our Team →</a>
         <footer>
             <p>© 2025 WorkWhiz. All Rights Reserved.</p>
         </footer>
     </div>
-</body>
-</html>
+{% endblock bottom_strip %}

@@ -3,13 +3,21 @@ services:
     name: workwhiz
     env: python
     buildCommand: "./build.sh"
-    startCommand: gunicorn WorkWhiz.wsgi:application
+    startCommand: "gunicorn WorkWhiz.wsgi:application"
     plan: free
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: WorkWiz2.settings
+        value: WorkWhiz.settings
       - key: SECRET_KEY
-        value: ^=6od-@&vo4i$wukkbjcb2w-6ctob@*c8%=x$jc)#2(ug^(@@_
+        generateValue: true
       - key: DEBUG
-        value: False
+        value: "False"
+      - key: DATABASE_URL
+        sync: false  # Set manually — Supabase PostgreSQL connection string
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
     autoDeploy: true
