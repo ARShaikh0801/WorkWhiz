@@ -247,6 +247,9 @@ def worker_profile(request):
             if not profile_image.content_type.startswith('image/'):
                 messages.error(request, 'Profile image must be an image file.')
                 return redirect('accounts:worker_profile')
+            # Delete old image from Cloudinary before assigning new one
+            if profile.profile_image:
+                profile.profile_image.delete(save=False)
             profile.profile_image = profile_image
             profile.save()
             messages.success(request, 'Profile image updated successfully.')
@@ -278,6 +281,9 @@ def edit_profile(request):
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=profile)
         if form.is_valid():
+            # Delete old image from Cloudinary if a new one is being uploaded
+            if 'profile_image' in request.FILES and profile.profile_image:
+                profile.profile_image.delete(save=False)
             form.save()
             request.user.full_name = request.POST.get('full_name')
             request.user.contact_number = request.POST.get('contact_number')
@@ -496,9 +502,16 @@ def delete_team_member(request, member_id):
 @login_required
 def update_profile_image(request):
     if request.method == 'POST' and request.FILES.get('profile_image'):
+        uploaded = request.FILES['profile_image']
+        if uploaded.size > 5 * 1024 * 1024:
+            return JsonResponse({'status': 'error', 'message': 'Profile image must be under 5MB.'}, status=400)
+        if not uploaded.content_type.startswith('image/'):
+            return JsonResponse({'status': 'error', 'message': 'File must be an image.'}, status=400)
         profile = request.user.contractorprofile if request.user.user_type == 'contractor' else request.user.workerprofile
-        profile.profile_image.delete(save=False)  # Remove old image
-        profile.profile_image = request.FILES['profile_image']
+        # Delete old image from Cloudinary only if one exists
+        if profile.profile_image:
+            profile.profile_image.delete(save=False)
+        profile.profile_image = uploaded
         profile.save()
         return JsonResponse({'status': 'success', 'message': 'Profile image updated successfully.', 'image_url': profile.profile_image.url})
     return JsonResponse({'status': 'error', 'message': 'No image provided or invalid request.'}, status=400)

@@ -85,8 +85,6 @@ SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-import sys
-print("DATABASE_URL:", os.environ.get('DATABASE_URL', 'NOT SET'), file=sys.stderr)
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
