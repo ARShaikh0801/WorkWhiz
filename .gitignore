@@ -36,3 +36,4 @@ desktop.ini
 
 # One-off utility scripts
 replace_emojis.py
+test_cloudinary.py
