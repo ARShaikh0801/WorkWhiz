@@ -22,7 +22,80 @@
 </div>
 
 ## 📸 Screenshots
-*(Add your project screenshots here)*
+
+### 🏠 Landing & Authentication
+
+<details>
+<summary>🏡 Home Page</summary>
+<br>
+<img src="projectSS/home page.jpeg" alt="Home Page" width="100%">
+</details>
+
+<details>
+<summary>🔐 Login Page</summary>
+<br>
+<img src="projectSS/login page.jpeg" alt="Login Page" width="100%">
+</details>
+
+---
+
+### 📊 Dashboards
+
+<details>
+<summary>🏗️ Contractor Dashboard</summary>
+<br>
+<img src="projectSS/contractor dashboard.jpeg" alt="Contractor Dashboard" width="100%">
+</details>
+
+<details>
+<summary>👷 Worker Dashboard</summary>
+<br>
+<img src="projectSS/worker dashboard.jpeg" alt="Worker Dashboard" width="100%">
+</details>
+
+---
+
+### 💼 Jobs & Applications
+
+<details>
+<summary>📝 Job Post Form</summary>
+<br>
+<img src="projectSS/jobPost form page.jpeg" alt="Job Post Form" width="100%">
+</details>
+
+<details>
+<summary>📋 My Jobs</summary>
+<br>
+<img src="projectSS/my jobs page.jpeg" alt="My Jobs Page" width="100%">
+</details>
+
+<details>
+<summary>📄 Job Application Form</summary>
+<br>
+<img src="projectSS/job application form.jpeg" alt="Job Application Form" width="100%">
+</details>
+
+<details>
+<summary>📬 Job Applications</summary>
+<br>
+<img src="projectSS/job applications.jpeg" alt="Job Applications" width="100%">
+</details>
+
+<details>
+<summary>📑 My Applications</summary>
+<br>
+<img src="projectSS/my applications page.jpeg" alt="My Applications Page" width="100%">
+</details>
+
+---
+
+### 👤 Profile
+
+<details>
+<summary>🙍 User Profile</summary>
+<br>
+<img src="projectSS/user profile view page.jpeg" alt="User Profile View" width="100%">
+</details>
 
 
 ---
