@@ -79,6 +79,7 @@
 | **Backend** | Django 5.x (Python 3.10+) |
 | **Frontend** | HTML5, CSS3 (Custom Design System), Vanilla JavaScript |
 | **Database** | PostgreSQL (Supabase) / SQLite (local dev) |
+| **Media Storage** | Cloudinary (profile images & uploads) |
 | **Static Files** | WhiteNoise (production-ready) |
 | **Email** | SMTP via Gmail |
 | **i18n** | Google Translate API |
@@ -128,7 +129,7 @@ WorkWhiz/
 │   │   ├── styles.css       # Design system + responsive styles
 │   │   └── style-signup.css # Signup-specific styles
 │   └── images/            # Logos, team photos, defaults
-├── media/                 # User-uploaded files (gitignored)
+├── media/                 # User-uploaded files (local dev only, Cloudinary in prod)
 ├── requirements.txt       # Python dependencies
 ├── build.sh               # Render build script
 ├── render.yaml            # Render deployment config
@@ -173,6 +174,9 @@ EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 DEFAULT_FROM_EMAIL=your-email@gmail.com
 DATABASE_URL=                 # Leave empty for local SQLite
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 DEBUG=True
 ```
 
@@ -214,7 +218,10 @@ This project is configured for one-click deployment on [Render](https://render.c
 2. Create a new **Web Service** on Render
 3. Connect your GitHub repo
 4. Render will auto-detect `render.yaml` and configure everything
-5. Set the email environment variables in the Render dashboard
+5. Set the following environment variables in the Render dashboard:
+   - `DATABASE_URL` — Supabase PostgreSQL connection string
+   - `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` — Gmail SMTP
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — Cloudinary media storage
 
 ---
 
