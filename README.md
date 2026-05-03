@@ -302,9 +302,9 @@ This project is configured for one-click deployment on [Render](https://render.c
 
 <table>
 <tr>
-<td align="center"><strong>Shaikh Abdulrauf</strong><br>Backend Developer<br><em>Django, Python, C++</em></td>
-<td align="center"><strong>Chauhan Dev</strong><br>Frontend Developer<br><em>HTML, CSS, JavaScript</em></td>
-<td align="center"><strong>Shah Jinay</strong><br>Creative Developer<br><em>Web Dev, Animation, Design</em></td>
+<td align="center"><strong>Shaikh Abdulrauf</strong><br>Backend Developer<br><em>Django, Python, C++</em><br>[GitHub](https://github.com/ARShaikh0801)</td>
+<td align="center"><strong>Chauhan Dev</strong><br>Frontend Developer<br><em>HTML, CSS, JavaScript</em>[GitHub](https://github.com/ARShaikh0801)</td>
+<td align="center"><strong>Shah Jinay</strong><br>Creative Developer<br><em>Web Dev, Animation, Design</em>[GitHub](https://github.com/ARShaikh0801)</td>
 </tr>
 </table>
 
