@@ -302,12 +302,12 @@ This project is configured for one-click deployment on [Render](https://render.c
 
 <table>
 <tr>
-<td align="center"><strong>Shaikh Abdulrauf</strong><br>Backend Developer<br><em>Django, Python, C++</em>
+<td align="center"><strong>Shaikh Abdulrauf</strong><br>Fullstack Developer<br><em>HTML, CSS, JavaScript,Django, Cloudinary, Supabase</em>
   <br>
   
   [GitHub](https://github.com/ARShaikh0801)
 </td>
-<td align="center"><strong>Chauhan Dev</strong><br>Frontend Developer<br><em>HTML, CSS, JavaScript</em>
+<td align="center"><strong>Chauhan Dev</strong><br>Backend Developer<br><em>Django, Python</em>
   <br>
   
   [GitHub](https://github.com/devil123-maker)</td>
