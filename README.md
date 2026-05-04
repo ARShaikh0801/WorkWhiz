@@ -302,7 +302,7 @@ This project is configured for one-click deployment on [Render](https://render.c
 
 <table>
 <tr>
-<td align="center"><strong>Shaikh Abdulrauf</strong><br>Fullstack Developer<br><em>HTML, CSS, JavaScript,Django, Cloudinary, Supabase</em>
+<td align="center"><strong>Shaikh Abdulrauf</strong><br>Fullstack Developer<br><em>HTML, CSS, JavaScript,Django,<br> Cloudinary, Supabase</em>
   <br>
   
   [GitHub](https://github.com/ARShaikh0801)
